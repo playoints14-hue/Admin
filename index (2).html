@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Emirates Admin</title>
+<style>
+:root{
+  --ink:#0a1628;--ink2:#13233d;--navy:#071426;--navy2:#0d2442;
+  --gold:#d6ad5a;--gold2:#f0d28a;--gold3:#9a7430;
+  --blue:#2f6fed;--blue2:#1e4fc4;
+  --bg:#f3f5f9;--card:#ffffff;--line:#e4e9f2;--muted:#6b7689;
+  --green:#12895a;--amber:#b7791f;--red:#d63a3a;
+  --shadow:0 1px 2px rgba(10,22,40,.04),0 8px 24px rgba(10,22,40,.06);
+  --shadow2:0 2px 4px rgba(10,22,40,.05),0 18px 40px rgba(10,22,40,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Inter,'Hind Siliguri',system-ui,-apple-system,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1{font-size:22px;font-weight:800;letter-spacing:-.4px}
+h3{font-size:13px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:var(--ink2);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+h3:before{content:"";width:3px;height:14px;border-radius:3px;background:linear-gradient(180deg,var(--gold),var(--gold3))}
+.muted{color:var(--muted);font-size:12.5px}
+.hidden{display:none!important}
+
+/* প্রিলোডার */
+#preloader{position:fixed;inset:0;z-index:999;background:radial-gradient(900px 600px at 50% -10%,#1d3f73 0%,transparent 60%),linear-gradient(160deg,#071426,#0d2442 60%,#0a1d36);display:grid;place-items:center;transition:opacity .45s ease,visibility .45s}
+#preloader.done{opacity:0;visibility:hidden}
+.pl-wrap{display:flex;flex-direction:column;align-items:center;gap:22px}
+.pl-logo{width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,#f0d28a,#b8862b);display:grid;place-items:center;font-weight:900;font-size:30px;color:#2a1c03;box-shadow:0 0 0 1px #ffffff33,0 18px 40px #d6ad5a44;animation:plPulse 1.6s ease-in-out infinite}
+.pl-name{color:#f3e3b8;font-weight:800;letter-spacing:4px;font-size:13px}
+.pl-bar{width:180px;height:3px;border-radius:3px;background:#ffffff1a;overflow:hidden}
+.pl-bar i{display:block;height:100%;width:40%;background:linear-gradient(90deg,transparent,var(--gold2),transparent);animation:plSlide 1.2s ease-in-out infinite}
+@keyframes plPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes plSlide{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+.skel{position:relative;overflow:hidden;background:#eef2f8;border-radius:14px;min-height:64px}
+.skel:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,#ffffffaa,transparent);transform:translateX(-100%);animation:shimmer 1.3s infinite}
+@keyframes shimmer{100%{transform:translateX(100%)}}
+
+/* লগইন */
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(900px 520px at 12% -12%,#2a5aa8 0%,transparent 60%),radial-gradient(700px 420px at 100% 110%,#8a6320 0%,transparent 55%),linear-gradient(160deg,#071426,#0d2442)}
+.login{width:100%;max-width:400px;background:#fff;border-radius:24px;padding:36px 32px;box-shadow:0 40px 90px rgba(0,0,0,.45);position:relative;overflow:hidden}
+.login:before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--gold3),var(--gold2),var(--gold3))}
+.login .logo{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#f0d28a,#b8862b);display:grid;place-items:center;font-weight:900;font-size:26px;color:#2a1c03;margin-bottom:18px;box-shadow:0 12px 26px #d6ad5a55}
+.login h1{margin-bottom:4px}
+.login p{margin-bottom:24px}
+.login label{margin-top:4px}
+.login input{width:100%;margin-bottom:14px}
+.login .btn{width:100%;padding:14px;margin-top:6px}
+.err{color:var(--red);font-size:13px;min-height:18px;margin-top:10px}
+
+/* লেআউট */
+.app{display:grid;grid-template-columns:268px 1fr;min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:linear-gradient(180deg,#071426 0%,#0d2442 100%);color:#fff;padding:24px 16px 18px;display:flex;flex-direction:column;border-right:1px solid #ffffff10}
+.brand{display:flex;align-items:center;gap:13px;padding:4px 8px 22px;margin-bottom:10px;border-bottom:1px solid #ffffff14}
+.brand .mark{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#f0d28a,#b8862b);display:grid;place-items:center;font-weight:900;font-size:19px;color:#2a1c03;box-shadow:0 10px 22px #d6ad5a40}
+.brand b{font-size:16px;display:block;letter-spacing:.4px}
+.brand small{color:#9fb6d6;font-size:11.5px;letter-spacing:.6px;text-transform:uppercase}
+.grp{font-size:10px;letter-spacing:1.8px;color:#6f8bb3;font-weight:800;margin:18px 10px 8px;text-transform:uppercase}
+.menu{display:flex;flex-direction:column;gap:5px}
+.menu button{display:flex;align-items:center;gap:12px;width:100%;background:#ffffff06;border:1px solid #ffffff12;color:#c9d8ec;text-align:left;padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:600;font-size:13.5px;transition:all .18s}
+.menu button svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.menu button:hover{background:#ffffff12;border-color:#ffffff2a;color:#fff}
+.menu button.on{background:linear-gradient(90deg,#d6ad5a33,#d6ad5a10);border-color:#d6ad5a88;color:#fff;box-shadow:inset 3px 0 0 var(--gold2),0 8px 20px #00000033}
+.menu button.on svg{color:var(--gold2);opacity:1}
+.side .foot{margin-top:auto;padding-top:16px}
+.side .foot button{width:100%}
+
+.main{min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;padding:22px 30px;background:rgba(255,255,255,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top .muted{margin-top:3px}
+.top .crumb{font-size:11.5px;color:var(--gold3);font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.content{padding:28px 30px 80px;max-width:1180px;animation:fadeUp .35s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.mobile-bar{display:none}
+
+/* বাটন */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid transparent;border-radius:12px;padding:10px 18px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 1px 0 #ffffff40 inset,0 8px 18px rgba(47,111,237,.25);transition:transform .12s,box-shadow .18s,filter .18s}
+.btn:hover{filter:brightness(1.06);box-shadow:0 1px 0 #ffffff40 inset,0 12px 24px rgba(47,111,237,.32)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.gold{background:linear-gradient(135deg,#f5dc98,#c9963a);color:#2a1c03;box-shadow:0 1px 0 #ffffff80 inset,0 8px 18px rgba(201,150,58,.35)}
+.btn.ghost{background:#fff;color:var(--ink2);border-color:#d5deeb;box-shadow:0 1px 2px rgba(10,22,40,.05)}
+.btn.ghost:hover{border-color:#b8c6dc;background:#fafcff}
+.btn.ok{background:linear-gradient(135deg,#1fae70,#0f7a4e);box-shadow:0 1px 0 #ffffff40 inset,0 8px 18px rgba(18,137,90,.25)}
+.btn.bad{background:linear-gradient(135deg,#ef5350,#c62828);box-shadow:0 1px 0 #ffffff40 inset,0 8px 18px rgba(214,58,58,.25)}
+.btn.sm{padding:7px 13px;font-size:12.5px;border-radius:10px}
+
+/* ইনপুট */
+input,select,textarea{background:#fff;border:1px solid #d5deeb;border-radius:12px;padding:10px 13px;width:100%;outline:none;transition:border .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(47,111,237,.14)}
+label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:7px;font-weight:800;letter-spacing:.4px;text-transform:uppercase}
+
+/* কার্ড */
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;margin-bottom:18px;box-shadow:var(--shadow);position:relative}
+.card.flat{box-shadow:none}
+.hero{background:linear-gradient(125deg,#071426 0%,#0d2442 52%,#1b3f72 100%);color:#fff;border-radius:24px;padding:30px 32px;margin-bottom:20px;position:relative;overflow:hidden;box-shadow:var(--shadow2);border:1px solid #d6ad5a40}
+.hero:before{content:"";position:absolute;right:-80px;top:-90px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#d6ad5a4d,transparent 70%)}
+.hero:after{content:"";position:absolute;left:-60px;bottom:-110px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,#2f6fed40,transparent 70%)}
+.hero small{opacity:.8;font-size:11.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold2)}
+.hero .big{font-size:40px;font-weight:800;margin:8px 0 20px;letter-spacing:-.8px;position:relative;z-index:1}
+.hero .subs{display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:1}
+.hero .subs div{background:#ffffff10;border:1px solid #ffffff26;border-radius:16px;padding:12px 18px;min-width:160px;backdrop-filter:blur(6px)}
+.hero .subs small{color:#c8d6ea;letter-spacing:.6px}
+.hero .subs b{display:block;font-size:19px;margin-top:3px}
+.grid-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
+.stat .ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:#fff;margin-bottom:14px;box-shadow:0 8px 18px rgba(10,22,40,.18)}
+.stat .ic svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.stat span{color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.2px}
+.stat b{display:block;font-size:24px;margin-top:4px;letter-spacing:-.4px}
+.stat small{color:var(--muted);font-size:12px}
+.g-gold{background:linear-gradient(135deg,#f0d28a,#b8862b)}
+.g-blue{background:linear-gradient(135deg,#4d8cf6,#1e4fc4)}
+.g-green{background:linear-gradient(135deg,#2bbf80,#0f7a4e)}
+.g-amber{background:linear-gradient(135deg,#f6b53c,#c27a12)}
+.g-violet{background:linear-gradient(135deg,#9d7cf6,#5b3cc4)}
+.g-navy{background:linear-gradient(135deg,#2d4a78,#0d2442)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.line{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-top:14px}
+.line>div{flex:1;min-width:150px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.empty{color:var(--muted);text-align:center;padding:48px 20px;background:#fff;border:1px dashed #c7d3e6;border-radius:20px}
+.listRow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 4px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.listRow:last-child{border-bottom:0}
+.quick{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.item{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;transition:border-color .18s,box-shadow .18s}
+.item:hover{border-color:#c9d6ea;box-shadow:var(--shadow2)}
+.thumb{width:68px;height:68px;border-radius:16px;background:linear-gradient(135deg,#f6f1e2,#eef3fb);border:1px solid var(--line);overflow:hidden;display:grid;place-items:center;flex:none}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.upl{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.chipWrap{display:flex;gap:9px;flex-wrap:wrap;margin-top:6px}
+.chip{display:inline-flex;align-items:center;padding:9px 15px;border-radius:999px;border:1px solid #d5deeb;background:#fff;font-weight:700;cursor:pointer;transition:all .15s;font-size:13px}
+.chip:hover{border-color:var(--gold)}
+.chip.on{background:linear-gradient(135deg,var(--gold2),#c9963a);color:#2a1c03;border-color:#c9963a;box-shadow:0 6px 14px rgba(201,150,58,.3)}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cbox{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);transition:border-color .18s}
+.cbox:hover{border-color:#c9d6ea}
+.cbox .lbl b{display:block;font-size:13.5px}
+.cbox .lbl small{color:var(--muted);font-family:ui-monospace,Menlo,monospace;font-size:11px}
+.swatch{width:50px;height:50px;border-radius:14px;border:0;cursor:pointer;padding:0;background:none;box-shadow:0 0 0 1px #d5deeb,0 8px 16px rgba(10,22,40,.12)}
+.swatch::-webkit-color-swatch-wrapper{padding:0}
+.swatch::-webkit-color-swatch{border:0;border-radius:14px}
+.preview{border-radius:18px;padding:20px;margin-top:16px;border:1px solid var(--line);background:linear-gradient(135deg,#fff,#faf7ef)}
+.badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:999px;font-size:11.5px;font-weight:800;background:#eef3fb;color:#4a5a78;border:1px solid #dce5f3;letter-spacing:.2px}
+.b-pend{background:#fff5e4;color:var(--amber);border-color:#f6dcae}
+.b-ok{background:#e6f7ef;color:var(--green);border-color:#bfe8d3}
+.b-bad{background:#fdecec;color:var(--red);border-color:#f6c6c6}
+.seg{display:inline-flex;gap:4px;background:#fff;border:1px solid var(--line);border-radius:15px;padding:5px;margin-bottom:18px;flex-wrap:wrap;box-shadow:var(--shadow)}
+.seg button{border:1px solid transparent;background:transparent;padding:9px 17px;border-radius:11px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s}
+.seg button:hover{color:var(--ink2)}
+.seg button.on{background:linear-gradient(135deg,var(--navy2),#1b3f72);color:#fff;box-shadow:0 6px 14px rgba(13,36,66,.3)}
+.tabs-note{font-size:12.5px;color:var(--muted);margin:-6px 0 16px}
+.tx-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px}
+.tx-row>div label span{color:var(--gold3);margin-left:6px}
+.search{position:relative;margin-bottom:18px}
+.search input{padding-left:42px;border-radius:14px;box-shadow:var(--shadow)}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2}
+
+#notice{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:28px;background:linear-gradient(135deg,#071426,#0d2442);color:#fff;border-radius:16px;padding:14px 22px;z-index:60;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;font-weight:700;box-shadow:0 24px 50px rgba(7,20,38,.45);max-width:92%;border:1px solid #d6ad5a77}
+#notice.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;width:282px;z-index:40;transform:translateX(-100%);transition:transform .28s}
+  .side.open{transform:translateX(0)}
+  .mobile-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(100deg,#071426,#0d2442);color:#fff;position:sticky;top:0;z-index:30;border-bottom:1px solid #d6ad5a55}
+  .mobile-bar button{background:#ffffff14;border:1px solid #ffffff33;color:#fff;border-radius:11px;padding:8px 13px;cursor:pointer;font-weight:700}
+  .top{display:none}
+  .content{padding:18px 14px 56px}
+  .grid-stats{grid-template-columns:1fr 1fr}
+  .grid2,.grid3,.cgrid,.tx-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="preloader"><div class="pl-wrap"><div class="pl-logo">E</div><div class="pl-name">EMIRATES ADMIN</div><div class="pl-bar"><i></i></div></div></div>
+
+<div id="loginBox" class="login-wrap hidden">
+  <div class="login">
+    <div class="logo">E</div>
+    <h1>Emirates Admin</h1>
+    <p class="muted">অ্যাডমিন অ্যাকাউন্ট দিয়ে প্রবেশ করুন</p>
+    <label>ইমেইল</label><input id="email" type="email" autocomplete="username" />
+    <label>পাসওয়ার্ড</label><input id="pass" type="password" autocomplete="current-password" />
+    <button class="btn" id="loginBtn">লগইন</button>
+    <div id="loginErr" class="err"></div>
+  </div>
+</div>
+
+<div id="appBox" class="app hidden">
+  <aside class="side" id="side">
+    <div class="brand"><div class="mark">E</div><div><b>Emirates</b><small>Admin Console</small></div></div>
+    <nav class="menu">
+      <div class="grp">ওভারভিউ</div>
+      <button data-tab="dash" class="on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>ড্যাশবোর্ড</button>
+      <button data-tab="users"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M16 11a3.5 3.5 0 1 0 0-7"/><path d="M22 21a6 6 0 0 0-4-5.6"/></svg>ইউজার</button>
+      <button data-tab="kyc"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>KYC যাচাই</button>
+      <div class="grp">ওয়ালেট</div>
+      <button data-tab="dep"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="3"/><path d="M2 10h20"/><circle cx="17" cy="14.5" r="1.2"/></svg>ডিপোজিট</button>
+      <button data-tab="wd"><svg viewBox="0 0 24 24"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/><path d="M4 21h16"/></svg>উত্তোলন</button>
+      <button data-tab="amt"><svg viewBox="0 0 24 24"><path d="M4 7h10"/><path d="M4 12h16"/><path d="M4 17h7"/><circle cx="17" cy="7" r="2"/><circle cx="12" cy="17" r="2"/></svg>ডিপোজিট অ্যামাউন্ট</button>
+      <div class="grp">ইনভেস্টমেন্ট</div>
+      <button data-tab="pkg"><svg viewBox="0 0 24 24"><path d="M12 2l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 17l9 5 9-5"/></svg>প্যাকেজ</button>
+      <button data-tab="gift"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M5 12v9h14v-9"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>গিফট কোড</button>
+      <div class="grp">কন্টেন্ট</div>
+      <button data-tab="texts"><svg viewBox="0 0 24 24"><path d="M4 6V4h16v2"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>সাইটের লেখা</button>
+      <button data-tab="colors"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="16" cy="10" r="1.3"/></svg>সাইটের রং</button>
+      <div class="grp">সেটিংস</div>
+      <button data-tab="gw"><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>পেমেন্ট নম্বর</button>
+      <button data-tab="support"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>সাপোর্ট লিংক</button>
+      <button data-tab="set"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>সাইট নিয়ম</button>
+    </nav>
+    <div class="foot"><button class="btn ghost sm" id="logoutBtn">লগআউট</button></div>
+  </aside>
+  <div class="main">
+    <div class="mobile-bar"><b>Emirates Admin</b><button id="menuBtn">মেনু</button></div>
+    <div class="top"><div><div class="crumb">Emirates Admin</div><h1 id="pageTitle">ড্যাশবোর্ড</h1><div class="muted" id="pageSub">সাইটের সামগ্রিক অবস্থা</div></div></div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div id="notice"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+import { getDatabase, ref, onValue, update, runTransaction, push } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDBA1MJf33jl4ZZQEtw9XN5jjRtD1kaK4I",
+  authDomain: "emirates-19851.firebaseapp.com",
+  databaseURL: "https://emirates-19851-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "emirates-19851",
+  storageBucket: "emirates-19851.firebasestorage.app",
+  messagingSenderId: "1005235108830",
+  appId: "1:1005235108830:web:053e4063a27c7cdd203b4f",
+  measurementId: "G-DT1T4GVQML"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+// ইউজার প্যানেলের অনুবাদযোগ্য লেখা (বাংলা ও ইংরেজি) — key অনুযায়ী সেভ হয়
+const TEXT_ITEMS = [{"key": "_loginView__auth_title_span", "sel": "#loginView .auth-title span", "bn": "সাইন ইন", "en": "Login", "mode": "t"}, {"key": "_loginView__brand_title_p", "sel": "#loginView .brand-title p", "bn": "আপনার মোবাইল নম্বর ও পাসওয়ার্ড দিয়ে প্রবেশ করুন", "en": "Enter your phone number and password.", "mode": "t"}, {"key": "_loginPhone", "sel": "#loginPhone", "bn": "মোবাইল নম্বর", "en": "Phone number", "mode": "p"}, {"key": "_loginPassword", "sel": "#loginPassword", "bn": "পাসওয়ার্ড", "en": "Password", "mode": "p"}, {"key": "_loginView__auth_remember_span_last_child", "sel": "#loginView .auth-remember span:last-child", "bn": "মনে রাখুন", "en": "Remember me", "mode": "t"}, {"key": "_loginView__auth_btn", "sel": "#loginView .auth-btn", "bn": "লগইন করুন", "en": "Log in", "mode": "t"}, {"key": "_loginView__sub_link", "sel": "#loginView .sub-link", "bn": "অ্যাকাউন্ট নেই? নিবন্ধন করুন", "en": "Don't have an account yet? Sign up", "mode": "h"}, {"key": "_registerView__auth_title_span", "sel": "#registerView .auth-title span", "bn": "আপনার অ্যাকাউন্ট তৈরি করুন", "en": "Create an account", "mode": "t"}, {"key": "_registerView__auth_sub", "sel": "#registerView .auth-sub", "bn": "আপনার তথ্য দিয়ে নতুন একাউন্ট তৈরি করুন", "en": "Enter your phone number and choose a password.", "mode": "t"}, {"key": "_regPhone", "sel": "#regPhone", "bn": "ফোন নম্বর", "en": "Phone number", "mode": "p"}, {"key": "_regPassword", "sel": "#regPassword", "bn": "আপনার পাসওয়ার্ড লিখুন", "en": "Password", "mode": "p"}, {"key": "_regPassword2", "sel": "#regPassword2", "bn": "পাসওয়ার্ড আবার লিখুন", "en": "Confirm password", "mode": "p"}, {"key": "_regInvite", "sel": "#regInvite", "bn": "আমন্ত্রণ কোড", "en": "Invite code", "mode": "p"}, {"key": "_regCaptcha", "sel": "#regCaptcha", "bn": "কোড", "en": "Code", "mode": "p"}, {"key": "_regSubmitText", "sel": "#regSubmitText", "bn": "অ্যাকাউন্ট তৈরি করুন", "en": "Create my account", "mode": "t"}, {"key": "_regLoginText", "sel": "#regLoginText", "bn": "ইতিমধ্যে অ্যাকাউন্ট আছে? লগইন করুন", "en": "Do you already have an account? Log in", "mode": "h"}, {"key": "_homeSubScreen__ex_ht_b", "sel": "#homeSubScreen .ex-ht b", "bn": "বড় স্বপ্ন দেখুন", "en": "Dream bigger", "mode": "t"}, {"key": "_homeSubScreen__ex_ht_span", "sel": "#homeSubScreen .ex-ht span", "bn": "লক্ষ্যের পথে এগিয়ে চলুন", "en": "Travel towards your goals", "mode": "t"}, {"key": "_homeSubScreen__ex_gtop_small", "sel": "#homeSubScreen .ex-gtop small", "bn": "স্বাগতম,", "en": "Hello,", "mode": "t"}, {"key": "_homeSubScreen__ex_gtop___div___b", "sel": "#homeSubScreen .ex-gtop > div > b", "bn": "লিডার ", "en": "Leader ", "mode": "first"}, {"key": "_homeSubScreen__ex_safe", "sel": "#homeSubScreen .ex-safe", "bn": "নিরাপদ", "en": "Secure account", "mode": "t"}, {"key": "_homeSubScreen__ex_b_g_small", "sel": "#homeSubScreen .ex-b.g small", "bn": "আমার ব্যালেন্স", "en": "My balance", "mode": "t"}, {"key": "_homeSubScreen__ex_b_y_small", "sel": "#homeSubScreen .ex-b.y small", "bn": "মোট আয়", "en": "Total earnings", "mode": "t"}, {"key": "_homeSubScreen__ex_more", "sel": "#homeSubScreen .ex-more", "bn": "আরও দেখুন", "en": "See more", "mode": "t"}, {"key": "_homeSubScreen__ex_q_button_nth_child_1__b", "sel": "#homeSubScreen .ex-q button:nth-child(1) b", "bn": "রিচার্জ", "en": "Recharge", "mode": "t"}, {"key": "_homeSubScreen__ex_q_button_nth_child_1__small", "sel": "#homeSubScreen .ex-q button:nth-child(1) small", "bn": "টাকা জমা করুন", "en": "Add funds", "mode": "t"}, {"key": "_homeSubScreen__ex_q_button_nth_child_2__b", "sel": "#homeSubScreen .ex-q button:nth-child(2) b", "bn": "উত্তোলন", "en": "Withdraw", "mode": "t"}, {"key": "_homeSubScreen__ex_q_button_nth_child_2__small", "sel": "#homeSubScreen .ex-q button:nth-child(2) small", "bn": "আয় তুলুন", "en": "Your earnings", "mode": "t"}, {"key": "_homeSubScreen__ex_q_button_nth_child_3__b", "sel": "#homeSubScreen .ex-q button:nth-child(3) b", "bn": "পয়েন্ট", "en": "Point", "mode": "t"}, {"key": "_homeSubScreen__ex_q_button_nth_child_3__small", "sel": "#homeSubScreen .ex-q button:nth-child(3) small", "bn": "পয়েন্ট অর্জন করুন", "en": "Earn points", "mode": "t"}, {"key": "_homeSubScreen__ex_q_button_nth_child_4__b", "sel": "#homeSubScreen .ex-q button:nth-child(4) b", "bn": "টাস্ক সেন্টার", "en": "Task Center", "mode": "t"}, {"key": "_homeSubScreen__ex_q_button_nth_child_4__small", "sel": "#homeSubScreen .ex-q button:nth-child(4) small", "bn": "মিশন সম্পূর্ণ করুন", "en": "Complete your missions", "mode": "t"}, {"key": "_homeSubScreen__ex_t_b", "sel": "#homeSubScreen .ex-t b", "bn": "সবার জন্য গেমস", "en": "Games for everyone", "mode": "last"}, {"key": "_homeSubScreen__ex_t_a", "sel": "#homeSubScreen .ex-t a", "bn": "সব দেখুন", "en": "See all", "mode": "first"}, {"key": "_homeSubScreen__gm_c_nth_child_1__b", "sel": "#homeSubScreen .gm-c:nth-child(1) b", "bn": "রিচার্জ", "en": "Recharge", "mode": "t"}, {"key": "_homeSubScreen__gm_c_nth_child_1__small", "sel": "#homeSubScreen .gm-c:nth-child(1) small", "bn": "আপনার অ্যাকাউন্টে টাকা জমা করুন", "en": "Fund your account", "mode": "t"}, {"key": "_homeSubScreen__gm_c_nth_child_2__b", "sel": "#homeSubScreen .gm-c:nth-child(2) b", "bn": "উত্তোলন", "en": "Withdraw", "mode": "t"}, {"key": "_homeSubScreen__gm_c_nth_child_2__small", "sel": "#homeSubScreen .gm-c:nth-child(2) small", "bn": "আপনার আয় তুলুন", "en": "Withdraw your winnings", "mode": "t"}, {"key": "_homeSubScreen__gm_c_nth_child_3__b", "sel": "#homeSubScreen .gm-c:nth-child(3) b", "bn": "পয়েন্ট", "en": "Point", "mode": "t"}, {"key": "_homeSubScreen__gm_c_nth_child_3__small", "sel": "#homeSubScreen .gm-c:nth-child(3) small", "bn": "পয়েন্ট অর্জন করুন", "en": "Earn points", "mode": "t"}, {"key": "_homeSubScreen__gm_c_nth_child_4__b", "sel": "#homeSubScreen .gm-c:nth-child(4) b", "bn": "টাস্ক সেন্টার", "en": "Task Center", "mode": "t"}, {"key": "_homeSubScreen__gm_c_nth_child_4__small", "sel": "#homeSubScreen .gm-c:nth-child(4) small", "bn": "মিশন সম্পূর্ণ করুন", "en": "Complete your missions", "mode": "t"}, {"key": "_homeSubScreen__ex_ban_em", "sel": "#homeSubScreen .ex-ban em", "bn": "Emirates-এর সাথে,", "en": "With Emirates,", "mode": "t"}, {"key": "_homeSubScreen__ex_ban_b", "sel": "#homeSubScreen .ex-ban b", "bn": "প্রতিটি পদক্ষেপ একটি সুযোগ", "en": "Every step is an opportunity", "mode": "t"}, {"key": "_b_nav_home", "sel": "#b-nav-home", "bn": "হোম", "en": "Welcome", "mode": "t"}, {"key": "_b_nav_ord", "sel": "#b-nav-ord", "bn": "পোর্টফোলিও", "en": "Product", "mode": "t"}, {"key": "_b_nav_team", "sel": "#b-nav-team", "bn": "টিম", "en": "Team", "mode": "t"}, {"key": "_b_nav_me", "sel": "#b-nav-me", "bn": "প্রোফাইল", "en": "Me", "mode": "t"}, {"key": "_meSubScreen__pf_u_em", "sel": "#meSubScreen .pf-u em", "bn": "সদস্য · লেভেল 1", "en": "Level 1", "mode": "t"}, {"key": "_meSubScreen__pf_bal_small", "sel": "#meSubScreen .pf-bal small", "bn": "পে", "en": "Pay", "mode": "t"}, {"key": "_meSubScreen__pf_act___div_nth_child_1_", "sel": "#meSubScreen .pf-act > div:nth-child(1)", "bn": "রিচার্জ", "en": "Recharge", "mode": "last"}, {"key": "_meSubScreen__pf_act___div_nth_child_2_", "sel": "#meSubScreen .pf-act > div:nth-child(2)", "bn": "উত্তোলন", "en": "Withdraw", "mode": "last"}, {"key": "_meSubScreen__pf_act___div_nth_child_3_", "sel": "#meSubScreen .pf-act > div:nth-child(3)", "bn": "ইতিহাস", "en": "Historical", "mode": "last"}, {"key": "_meSubScreen__pf_task_h3", "sel": "#meSubScreen .pf-task h3", "bn": "টাস্ক সেন্টার", "en": "Task Center", "mode": "t"}, {"key": "_meSubScreen__pf_task_p", "sel": "#meSubScreen .pf-task p", "bn": "টাস্ক সম্পন্ন করুন ও আকর্ষণীয় বোনাস পান", "en": "Complete tasks and earn generous bonuses", "mode": "t"}, {"key": "_meSubScreen__pf_task__em_go", "sel": "#meSubScreen .pf-task .em-go", "bn": "যান ›", "en": "Go there >", "mode": "t"}, {"key": "_meSubScreen__em_out", "sel": "#meSubScreen .em-out", "bn": "লগ আউট", "en": "Log out", "mode": "t"}, {"key": "_teamSubScreen__em_pill", "sel": "#teamSubScreen .em-pill", "bn": "আমার টিম ›", "en": "My team >", "mode": "t"}, {"key": "_teamSubScreen__em_ban_h2", "sel": "#teamSubScreen .em-ban h2", "bn": "টিম তৈরি করুন", "en": "Build your team", "mode": "last"}, {"key": "_teamSubScreen__em_ic_not__lk__i", "sel": "#teamSubScreen .em-ic:not(.lk) i", "bn": "আমন্ত্রণ কোড", "en": "Invitation code", "mode": "t"}, {"key": "_teamSubScreen__em_ic_lk_i", "sel": "#teamSubScreen .em-ic.lk i", "bn": "আমন্ত্রণ লিংক", "en": "Invitation link", "mode": "t"}, {"key": "_teamSubScreen__em_cp_button_nth_child_1_", "sel": "#teamSubScreen .em-cp button:nth-child(1)", "bn": "কোড কপি করুন", "en": "Copy code", "mode": "t"}, {"key": "_teamSubScreen__em_cp_button_nth_child_2_", "sel": "#teamSubScreen .em-cp button:nth-child(2)", "bn": "লিংক কপি করুন", "en": "Copy link", "mode": "t"}, {"key": "_teamSubScreen__em_lt_b", "sel": "#teamSubScreen .em-lt b", "bn": "টিম লেভেল", "en": "Team level", "mode": "t"}, {"key": "_teamSubScreen__em_lt_small", "sel": "#teamSubScreen .em-lt small", "bn": "টিম বড় করুন, আয় বাড়ান", "en": "Grow your team, grow your income", "mode": "t"}, {"key": "_teamSubScreen__em_lv_section_span_nth_child_1_", "sel": "#teamSubScreen .em-lv section span:nth-child(1)", "bn": "কমিশন", "en": "Commission", "mode": "last"}, {"key": "_teamSubScreen__em_lv_section_span_nth_child_2_", "sel": "#teamSubScreen .em-lv section span:nth-child(2)", "bn": "সদস্য", "en": "Users", "mode": "last"}, {"key": "_teamSubScreen__em_lv_section_span_nth_child_3_", "sel": "#teamSubScreen .em-lv section span:nth-child(3)", "bn": "রিওয়ার্ড", "en": "Rewards", "mode": "last"}, {"key": "_rcTitle", "sel": "#rcTitle", "bn": "রিচার্জ", "en": "Recharge", "mode": "t"}, {"key": "_rcT1", "sel": "#rcT1", "bn": "পেমেন্ট চ্যানেল", "en": "Payment channel", "mode": "t"}, {"key": "_rcT2", "sel": "#rcT2", "bn": "টপ-আপের পরিমাণ", "en": "Top-up amount", "mode": "t"}, {"key": "_rechargeAmountInput", "sel": "#rechargeAmountInput", "bn": "রিচার্জের পরিমাণ লিখুন", "en": "Enter the amount to top up.", "mode": "p"}, {"key": "_rechargeSubmitBtn", "sel": "#rechargeSubmitBtn", "bn": "এখন রিচার্জ করুন", "en": "Recharge now", "mode": "t"}, {"key": "_rcT3", "sel": "#rcT3", "bn": "রিচার্জের আগে মনে রাখুন", "en": "Reminder before recharging", "mode": "t"}, {"key": "_rcR1", "sel": "#rcR1", "bn": "১. পেমেন্ট চ্যানেলের কার্যসময় সকাল ৯:০০ থেকে রাত ৮:৩০ পর্যন্ত।", "en": "1. The working hours of the payment channel are from 9:00 a.m. to 8:30 p.m.", "mode": "t"}, {"key": "_rcR2", "sel": "#rcR2", "bn": "২. জমা অবশ্যই একই চ্যানেলে করতে হবে: ভিন্ন চ্যানেলের মধ্যে জমা সমর্থিত নয়।", "en": "2. The deposit must be made in the same channel: deposits between different channels are not supported.", "mode": "t"}, {"key": "_rcR4", "sel": "#rcR4", "bn": "৪. ট্রান্সফার সম্পন্ন হলে পেমেন্টের প্রমাণ পাঠান এবং ২০ থেকে ৩০ মিনিট অপেক্ষা করুন। এই সময়ের পরেও পেমেন্ট না এলে কাস্টমার সার্ভিসে যোগাযোগ করুন।", "en": "4. Once the transfer is complete, send the proof of payment and then wait 20 to 30 minutes. If your payment does not arrive after this time, contact customer service.", "mode": "t"}, {"key": "_rcR5", "sel": "#rcR5", "bn": "৫. রিচার্জের নিয়ম মেনে চলুন। প্ল্যাটফর্মের নিয়ম অনুযায়ী রিচার্জ না করলে আর্থিক ক্ষতি হলে কোম্পানি দায়ী থাকবে না।", "en": "5. Respect the top-up rules. If you do not top up according to the platform's rules and this causes financial loss, the company cannot be held responsible.", "mode": "t"}, {"key": "_noticeTelegramLink", "sel": "#noticeTelegramLink", "bn": "অফিশিয়াল টেলিগ্রাম চ্যানেলে যোগ দিন >", "en": "Click to access the official Telegram channel >", "mode": "last"}];
+// শুধু বাংলা লেখা (আইডি ভিত্তিক)
+const ID_ITEMS = [{"id": "noticePopupTitle", "text": "Notification message"}, {"id": "teamMembersModalTitle", "text": "লেভেল ১ সদস্য তালিকা"}, {"id": "withdrawNetLabel", "text": "Amount received:"}, {"id": "regBonusLabel", "text": "স্বাগত ক্রেডিট"}, {"id": "regSubmitText", "text": "অ্যাকাউন্ট তৈরি করুন"}, {"id": "exPhone", "text": "-"}, {"id": "emBal", "text": "0"}, {"id": "emEarn", "text": "৳0"}, {"id": "homeDateLabel", "text": "Emirates"}, {"id": "homePhoneNumber", "text": "-"}, {"id": "homeAvatarInitial", "text": "S"}, {"id": "homeWelcomeName", "text": "Emirates"}, {"id": "nav-lbl-dep", "text": "রিচার্জ"}, {"id": "nav-lbl-pay", "text": "উত্তোলন"}, {"id": "hpGoldInvest", "text": "৳0"}, {"id": "hpInvest", "text": "৳0"}, {"id": "pcIncome", "text": "৳0"}, {"id": "pfName", "text": "-"}, {"id": "pfInvest", "text": "৳0"}, {"id": "pfDep", "text": "৳0"}, {"id": "pfWd", "text": "৳0"}, {"id": "pfRoi", "text": "0%"}, {"id": "pfActive", "text": "0"}, {"id": "pfDone", "text": "0"}, {"id": "emCode", "text": "-"}, {"id": "emLink", "text": "-"}, {"id": "emP1", "text": "-"}, {"id": "emM1", "text": "0"}, {"id": "emC1", "text": "৳0"}, {"id": "emP2", "text": "-"}, {"id": "emM2", "text": "0"}, {"id": "emC2", "text": "৳0"}, {"id": "emP3", "text": "-"}, {"id": "emM3", "text": "0"}, {"id": "emC3", "text": "৳0"}, {"id": "tmUsers", "text": "0"}, {"id": "tmUsersL", "text": "মোট সদস্য ›"}, {"id": "tmRew", "text": "৳0"}, {"id": "tmRewL", "text": "মোট রিওয়ার্ড ›"}, {"id": "lvl1Members", "text": "0"}, {"id": "lvl2Members", "text": "0"}, {"id": "lvl3Members", "text": "0"}, {"id": "c1Members", "text": "0"}, {"id": "c1Invest", "text": "৳ 0"}, {"id": "c1Comm", "text": "৳ 0.0"}, {"id": "c1With", "text": "৳ 0"}, {"id": "teamEmpty1", "text": "লেভেল 1-এ এখনো কোনো সদস্য নেই।"}, {"id": "c2Members", "text": "0"}, {"id": "c2Invest", "text": "৳ 0"}, {"id": "c2Comm", "text": "৳ 0.0"}, {"id": "c2With", "text": "৳ 0"}, {"id": "teamEmpty2", "text": "লেভেল 2-এ এখনো কোনো সদস্য নেই।"}, {"id": "c3Members", "text": "0"}, {"id": "c3Invest", "text": "৳ 0"}, {"id": "c3Comm", "text": "৳ 0.0"}, {"id": "c3With", "text": "৳ 0"}, {"id": "teamEmpty3", "text": "লেভেল 3-এ এখনো কোনো সদস্য নেই।"}, {"id": "pfPhone", "text": "-"}, {"id": "pfBal", "text": "0.00"}, {"id": "pnStore", "text": "৳ 0.00"}, {"id": "pnComm", "text": "৳ 0.00"}, {"id": "pnDiv", "text": "৳ 0.00"}, {"id": "pnToday", "text": "৳ 0.00"}, {"id": "pnRech", "text": "৳ 0.00"}, {"id": "pnWd", "text": "৳ 0.00"}, {"id": "b-nav-home", "text": "Home"}, {"id": "b-nav-pkg", "text": "Package"}, {"id": "b-nav-ord", "text": "Portfolio"}, {"id": "b-nav-team", "text": "Team"}, {"id": "b-nav-me", "text": "Profile"}, {"id": "rcTitle", "text": "রিচার্জ"}, {"id": "rcT1", "text": "পেমেন্ট চ্যানেল"}, {"id": "rcT2", "text": "টপ-আপের পরিমাণ"}, {"id": "rcT3", "text": "রিচার্জের আগে মনে রাখুন"}, {"id": "rechargeRange", "text": "৳ 500 – ৳ 500000"}, {"id": "rechargeFooterAmount", "text": "500"}, {"id": "dsBrand", "text": "bKash Deposit"}, {"id": "dsAmount", "text": "৳ 0"}, {"id": "dsTrx", "text": "-"}, {"id": "dsMethod", "text": "-"}, {"id": "pdTitle", "text": "Emirates"}, {"id": "pdKicker", "text": "আপনার ৯০ দিনের আয়"}, {"id": "pdDayLbl", "text": "দিন ১"}, {"id": "pdPill", "text": "খরচ উসুল হয়নি"}, {"id": "pdMid", "text": "D45"}, {"id": "pdEnd", "text": "D90"}, {"id": "ckNext", "text": "'+(st.full?T('সম্পন্ন','Completed'):st.done?T('পরবর্তী ','Next in ')+ckCountdown():T('এখনই চেক-ইন করুন','Ready now'))+'"}, {"id": "ckSc", "text": "'+days+'"}, {"id": "ckDots", "text": "'+dots+'"}];
+const COLOR_ITEMS = [
+  ['primaryRed','প্রধান লাল','--primary-red','#870315'],
+  ['redGlow','লাল আভা','--red-glow','#b5051c'],
+  ['bgMain','মূল ব্যাকগ্রাউন্ড','--bg-main','#f9f8f7'],
+  ['bgCard','কার্ড ব্যাকগ্রাউন্ড','--bg-card','#ffffff'],
+  ['textDark','মূল লেখা','--text-dark','#1c1c1c'],
+  ['textMuted','হালকা লেখা','--text-muted','#6b6b6b'],
+  ['borderColor','বর্ডার','--border-color','#efe3c2'],
+  ['gold1','সোনালি ১','--gold1','#e7c270'],
+  ['gold2','সোনালি ২','--gold2','#bea668'],
+  ['gold3','সোনালি ৩','--gold3','#b8862b'],
+  ['bkashColor','বিকাশের রং','--bkash-color','#e2125d'],
+  ['nagadColor','নগদের রং','--nagad-color','#f55a14']
+];
+const QUICK_SUGGEST = [550,1200,2500,5000,10000,20000,40000,80000,150000,300000];
+const DEP = { PENDING: 'অপেক্ষমাণ', OK: 'সফল', BAD: 'রিজেক্ট' };
+const WD  = { PENDING: 'পেন্ডিং', OK: 'সফল', BAD: 'রিজেক্ট' };
+
+// লোডিং: সব ডাটা না আসা পর্যন্ত প্রিলোডার দেখাবে
+const loaded = { users:false, deposits:false, withdrawals:false, packages:false, gifts:false, gateways:false, support:false, settings:false };
+function markLoaded(k) { loaded[k] = true; if (Object.values(loaded).every(Boolean)) hidePreloader(); }
+function hidePreloader() { setTimeout(() => $('preloader').classList.add('done'), 250); }
+
+let users = {}, deposits = {}, withdrawals = {}, packages = {}, gifts = {}, gateways = {}, support = {}, editable = {}, textBn = {}, textEn = {}, pageColors = {}, notice_ = {};
+let cfg = { rates: [0,0,0], regBonus: 0, depMin: 0, depQuick: [], wdMin: 0, wdFee: 10, wdStart: '10:00', wdEnd: '17:00' };
+let tab = 'dash', selectedPhone = null, userSearch = '', editPkgId = null, editGiftCode = null, pkgImage = null;
+let depFilter = 'pending', wdFilter = 'pending', textSearch = '', quickDraft = null;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '৳ ' + Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 });
+const fmt = t => t ? new Date(t).toLocaleString('bn-BD') : '';
+const num = v => Number(v) || 0;
+const splKey = sel => String(sel).replace(/[^a-zA-Z0-9]/g, '_');
+const badge = s => (s === DEP.OK || s === WD.OK) ? `<span class="badge b-ok">${esc(s)}</span>`
+  : s === DEP.BAD ? `<span class="badge b-bad">${esc(s)}</span>` : `<span class="badge b-pend">${esc(s)}</span>`;
+const skel = (n = 3) => Array.from({length:n}).map(() => `<div class="skel" style="margin-bottom:12px"></div>`).join('');
+
+/* ---------- বার্তা ও এরর ---------- */
+let noticeTimer = null;
+function notice(msg) {
+  const n = $('notice'); n.textContent = msg; n.classList.add('show');
+  clearTimeout(noticeTimer); noticeTimer = setTimeout(() => n.classList.remove('show'), 3200);
+}
+function friendlyErr(e) {
+  const raw = String((e && (e.code || e.message)) || '');
+  if (/invalid-credential|wrong-password|user-not-found|invalid-email/i.test(raw)) return 'ইমেইল বা পাসওয়ার্ড ভুল';
+  if (/too-many-requests/i.test(raw)) return 'অনেকবার চেষ্টা হয়েছে, কিছুক্ষণ পরে আবার চেষ্টা করুন';
+  if (/network/i.test(raw)) return 'ইন্টারনেট সংযোগ নেই';
+  if (/unauthorized-domain/i.test(raw)) return 'এই ঠিকানা থেকে লগইন করা যাচ্ছে না';
+  if (/permission|denied/i.test(raw)) return 'এই কাজের অনুমতি নেই';
+  return 'কাজটি সম্পন্ন করা যায়নি, আবার চেষ্টা করুন';
+}
+
+/* ---------- লগইন ---------- */
+$('loginBtn').onclick = async () => {
+  $('loginErr').textContent = '';
+  try { await signInWithEmailAndPassword(auth, $('email').value.trim(), $('pass').value); }
+  catch (e) { $('loginErr').textContent = friendlyErr(e); }
+};
+$('logoutBtn').onclick = () => signOut(auth);
+onAuthStateChanged(auth, user => {
+  $('loginBox').classList.toggle('hidden', !!user);
+  $('appBox').classList.toggle('hidden', !user);
+  if (user) startListeners(); else { $('preloader').classList.remove('done'); }
+  if (!user) hidePreloader();
+});
+
+/* ---------- ডাটা লিসেনার ---------- */
+let started = false;
+const onErr = e => { notice(friendlyErr(e)); };
+function startListeners() {
+  if (started) return; started = true;
+  onValue(ref(db, 'users'), s => { users = s.val() || {}; markLoaded('users'); render(); }, onErr);
+  onValue(ref(db, 'deposits'), s => { deposits = s.val() || {}; markLoaded('deposits'); render(); }, onErr);
+  onValue(ref(db, 'withdrawal_requests'), s => { withdrawals = s.val() || {}; markLoaded('withdrawals'); render(); }, onErr);
+  onValue(ref(db, 'packages'), s => { packages = s.val() || {}; markLoaded('packages'); render(); }, onErr);
+  onValue(ref(db, 'bonus_codes'), s => { gifts = s.val() || {}; markLoaded('gifts'); render(); }, onErr);
+  onValue(ref(db, 'gateways'), s => { gateways = s.val() || {}; markLoaded('gateways'); render(); }, onErr);
+  onValue(ref(db, 'support_links'), s => { support = s.val() || {}; markLoaded('support'); render(); }, onErr);
+  onValue(ref(db, 'site_settings'), s => {
+    const v = s.val() || {};
+    editable = v.editable_texts || {};
+    textBn = v.text_bn || {};
+    textEn = v.text_en || {};
+    pageColors = v.page_colors || {};
+    notice_ = { title: v.notice_title || '', text: v.notice_text || '', tg: v.telegram_channel_url || '' };
+    cfg = {
+      rates: Array.isArray(v.referral_commission_rates) ? [0,1,2].map(i => num(v.referral_commission_rates[i])) : [0,0,0],
+      regBonus: num(v.registration_bonus),
+      depMin: num(v.deposit_min_amount),
+      depQuick: Array.isArray(v.deposit_quick_amounts) ? v.deposit_quick_amounts.map(Number).filter(Number.isFinite) : [],
+      wdMin: num(v.withdrawal_min_amount ?? v.minimum_withdrawal),
+      wdFee: v.withdrawal_fee_percent === undefined ? 10 : num(v.withdrawal_fee_percent),
+      wdStart: v.withdrawal_start_time || '10:00',
+      wdEnd: v.withdrawal_end_time || '17:00',
+      kycReq: v.kyc_required_for_withdrawal !== false
+    };
+    markLoaded('settings'); render();
+  }, onErr);
+}
+
+/* ---------- মেনু ---------- */
+const TITLES = {
+  dash: ['ড্যাশবোর্ড', 'ইউজার প্যানেলের লাইভ ওভারভিউ'],
+  users: ['ইউজার', 'ইউজার খুঁজুন, ব্যালেন্স ও প্যাকেজ ব্যবস্থাপনা'],
+  dep: ['ডিপোজিট', 'ডিপোজিট অনুমোদন, রিজেক্ট ও ম্যানুয়াল যোগ'],
+  wd: ['উত্তোলন', 'উত্তোলন রিকোয়েস্ট ব্যবস্থাপনা'],
+  amt: ['ডিপোজিট অ্যামাউন্ট', 'রিচার্জ পেজে দেখানো দ্রুত বাছাইয়ের পরিমাণ'],
+  pkg: ['প্যাকেজ', 'প্যাকেজ যোগ, ছবি আপলোড, এডিট ও মুছে ফেলা'],
+  gift: ['গিফট কোড', 'গিফট কোড তৈরি ও ব্যবস্থাপনা'],
+  texts: ['সাইটের লেখা', 'ইউজার প্যানেলের প্রতিটি লেখা এখান থেকে বদলান'],
+  colors: ['সাইটের রং', 'ইউজার প্যানেলের প্রধান রংগুলো নির্ধারণ'],
+  gw: ['পেমেন্ট নম্বর', 'বিকাশ ও নগদের এজেন্ট নম্বর'],
+  support: ['সাপোর্ট লিংক', 'কাস্টমার সার্ভিস ও চ্যানেলের লিংক'],
+  kyc: ['KYC যাচাই', 'আইডি যাচাই অনুমোদন বা প্রত্যাখ্যান (KYC Review)'],
+  set: ['সাইট নিয়ম', 'বোনাস, উত্তোলনের সীমা, চার্জ ও সময়সীমা']
+};
+document.querySelectorAll('.menu button').forEach(b => b.onclick = () => go(b.dataset.tab));
+function go(t) {
+  tab = t; selectedPhone = null; editPkgId = null; editGiftCode = null; pkgImage = null;
+  document.querySelectorAll('.menu button').forEach(x => x.classList.toggle('on', x.dataset.tab === t));
+  $('side').classList.remove('open');
+  render();
+}
+window.go = go;
+$('menuBtn').onclick = () => $('side').classList.toggle('open');
+
+function render() {
+  if (!TITLES[tab]) return;
+  $('pageTitle').textContent = TITLES[tab][0];
+  $('pageSub').textContent = TITLES[tab][1];
+  if (tab === 'dash') renderDashboard();
+  else if (tab === 'kyc') renderKyc();
+  else if (tab === 'users') selectedPhone ? renderUserDetail() : renderUsers();
+  else if (tab === 'dep') renderDeposits();
+  else if (tab === 'wd') renderWithdrawals();
+  else if (tab === 'amt') renderAmounts();
+  else if (tab === 'pkg') renderPackages();
+  else if (tab === 'gift') renderGifts();
+  else if (tab === 'texts') renderTexts();
+  else if (tab === 'colors') renderColors();
+  else if (tab === 'gw') renderGateways();
+  else if (tab === 'support') renderSupport();
+  else renderSettings();
+}
+
+/* ---------- ড্যাশবোর্ড ---------- */
+function renderDashboard() {
+  const all = Object.values(users);
+  const totalBal = all.reduce((s, u) => s + num(u.balance), 0);
+  const active = all.filter(u => !u.isBanned).length;
+  const plans = all.reduce((n, u) => n + Object.values(u.purchasedCounts || {}).reduce((a, c) => a + num(c), 0), 0);
+  const buyers = all.filter(u => Object.values(u.purchasedCounts || {}).some(c => num(c) > 0)).length;
+  const deps = Object.values(deposits), wds = Object.values(withdrawals);
+  const depOk = deps.filter(d => d.status === DEP.OK).reduce((s, d) => s + num(d.amount), 0);
+  const wdOk = wds.filter(w => w.status === WD.OK).reduce((s, w) => s + num(w.amount), 0);
+  const depPend = deps.filter(d => d.status === DEP.PENDING).length;
+  const wdPend = wds.filter(w => w.status === WD.PENDING).length;
+  const commissions = all.reduce((s, u) => s + Object.values(u.commissions || {}).reduce((a, c) => a + num(c.amount), 0), 0);
+  const ICON = {
+    wallet: '<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="3"/><path d="M2 10h20"/></svg>',
+    up: '<svg viewBox="0 0 24 24"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>',
+    pct: '<svg viewBox="0 0 24 24"><path d="M19 5L5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>',
+    box: '<svg viewBox="0 0 24 24"><path d="M12 2l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/></svg>',
+    gift: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9"/></svg>',
+    ban: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>'
+  };
+  $('content').innerHTML = `
+    <div class="hero">
+      <small>মোট ইউজার ব্যালেন্স</small>
+      <div class="big">${money(totalBal)}</div>
+      <div class="subs">
+        <div><small>মোট ইউজার</small><b>${all.length}</b></div>
+        <div><small>সক্রিয় ইউজার</small><b>${active}</b></div>
+        <div><small>প্ল্যান কিনেছে</small><b>${buyers} জন · ${plans} টি</b></div>
+      </div>
+    </div>
+    <div class="grid-stats">
+      <div class="stat"><div class="ic g-blue">${ICON.wallet}</div><span>মোট ডিপোজিট (সফল)</span><b>${money(depOk)}</b><small>পেন্ডিং: ${depPend}</small></div>
+      <div class="stat"><div class="ic g-amber">${ICON.up}</div><span>মোট উত্তোলন (সফল)</span><b>${money(wdOk)}</b><small>পেন্ডিং: ${wdPend}</small></div>
+      <div class="stat"><div class="ic g-green">${ICON.pct}</div><span>মোট রেফার কমিশন</span><b>${money(commissions)}</b><small>৩ জেনারেশন</small></div>
+      <div class="stat"><div class="ic g-violet">${ICON.box}</div><span>প্যাকেজ</span><b>${Object.keys(packages).length}</b><small>মোট প্যাকেজ</small></div>
+      <div class="stat"><div class="ic g-gold">${ICON.gift}</div><span>গিফট কোড</span><b>${Object.keys(gifts).length}</b><small>সক্রিয়: ${Object.values(gifts).filter(g => g.status !== 'inactive').length}</small></div>
+      <div class="stat"><div class="ic g-navy">${ICON.ban}</div><span>ব্যান ইউজার</span><b>${all.length - active}</b><small>মোট ইউজারের</small></div>
+    </div>
+    <div class="quick">
+      <button class="btn" onclick="go('dep')">ডিপোজিট দেখুন</button>
+      <button class="btn" onclick="go('wd')">উত্তোলন রিভিউ</button>
+      <button class="btn ghost" onclick="go('users')">ইউজার ম্যানেজ</button>
+      <button class="btn gold" onclick="go('pkg')">প্যাকেজ যোগ করুন</button>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>সাম্প্রতিক ডিপোজিট</h3>${recentList(deposits, d => `${esc(d.userPhone)} · ${esc(d.method)} · ${money(d.amount)}`, d => badge(d.status))}</div>
+      <div class="card"><h3>সাম্প্রতিক উত্তোলন</h3>${recentList(withdrawals, w => `${esc(w.userPhone)} · ${esc(w.method)} · ${money(w.amount)}`, w => badge(w.status))}</div>
+    </div>`;
+}
+function recentList(obj, left, right) {
+  const items = Object.values(obj || {}).sort((a, b) => num(b.createdAt) - num(a.createdAt)).slice(0, 6);
+  if (!items.length) return `<p class="muted">এখনও কিছু নেই</p>`;
+  return items.map(i => `<div class="listRow"><span>${left(i)}</span>${right(i)}</div>`).join('');
+}
+
+/* ---------- রেফারেল ---------- */
+function referralCounts(phone) {
+  const me = users[phone] || {};
+  const all = Object.values(users);
+  if (!me.referralCode) return [0,0,0];
+  const l1 = all.filter(u => u.invitedByCode === me.referralCode);
+  const c1 = l1.map(u => u.referralCode).filter(Boolean);
+  const l2 = all.filter(u => c1.includes(u.invitedByCode));
+  const c2 = l2.map(u => u.referralCode).filter(Boolean);
+  const l3 = all.filter(u => c2.includes(u.invitedByCode));
+  return [l1.length, l2.length, l3.length];
+}
+
+/* ---------- ইউজার ---------- */
+function renderUsers() {
+  const q = userSearch.trim();
+  const list = Object.entries(users)
+    .filter(([phone]) => !q || phone.includes(q))
+    .sort((a, b) => num(b[1].createdAt) - num(a[1].createdAt));
+  $('content').innerHTML = `
+    <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="uSearch" placeholder="ফোন নম্বর দিয়ে খুঁজুন" value="${esc(userSearch)}"></div>
+    <div class="card" style="padding:6px 22px">
+      ${list.length ? list.map(([phone, u]) => `
+        <div class="listRow" style="cursor:pointer" onclick="openUser('${esc(phone)}')">
+          <div><b>${esc(phone)}</b> ${u.isBanned ? '<span class="badge b-bad">ব্যান</span>' : ''}<br>
+            <span class="muted">রেফার কোড: ${esc(u.referralCode || '—')}</span></div>
+          <div style="text-align:right"><b>${money(u.balance)}</b></div>
+        </div>`).join('') : `<div class="empty" style="border:0">কোনো ইউজার নেই</div>`}
+    </div>`;
+  const inp = $('uSearch');
+  if (inp) inp.oninput = e => { userSearch = e.target.value; renderUsers(); $('uSearch').focus(); };
+}
+window.openUser = phone => { selectedPhone = phone; renderUserDetail(); };
+window.backToUsers = () => { selectedPhone = null; renderUsers(); };
+
+function renderUserDetail() {
+  const phone = selectedPhone, u = users[phone];
+  if (!u) { selectedPhone = null; return renderUsers(); }
+  const [r1, r2, r3] = referralCounts(phone);
+  const owned = Object.entries(u.purchasedCounts || {}).filter(([, c]) => num(c) > 0);
+  const pkgOptions = Object.entries(packages).map(([id, p]) => `<option value="${esc(id)}">${esc(p.name || id)}</option>`).join('');
+  const acc = u.withdrawAccount || {};
+  const logs = Object.values(u.adminLog || {}).sort((a, b) => num(b.createdAt) - num(a.createdAt)).slice(0, 8);
+  $('content').innerHTML = `
+    <div style="margin-bottom:18px"><button class="btn ghost sm" onclick="backToUsers()">← ইউজার তালিকা</button></div>
+    <div class="hero" style="padding:24px 28px">
+      <small>ইউজার</small>
+      <div class="big" style="font-size:28px;margin:6px 0 14px">${esc(phone)} ${u.isBanned ? '<span class="badge b-bad">ব্যান</span>' : ''}</div>
+      <div class="subs">
+        <div><small>ব্যালেন্স</small><b>${money(u.balance)}</b></div>
+        <div><small>রেফার কোড</small><b>${esc(u.referralCode || '—')}</b></div>
+        <div><small>রেফারার কোড</small><b>${esc(u.invitedByCode || '—')}</b></div>
+      </div>
+    </div>
+    <div class="grid-stats">
+      <div class="stat"><span>১ম জেনারেশন</span><b>${r1}</b></div>
+      <div class="stat"><span>২য় জেনারেশন</span><b>${r2}</b></div>
+      <div class="stat"><span>৩য় জেনারেশন</span><b>${r3}</b></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>ব্যালেন্স</h3>
+        <label>পরিমাণ (৳)</label><input id="amtIn" type="number" min="1" step="1" placeholder="যেমন 500">
+        <div class="actions">
+          <button class="btn ok" onclick="creditUser('${esc(phone)}')">টাকা দিন</button>
+          <button class="btn bad" onclick="debitUser('${esc(phone)}')">টাকা নিন</button>
+        </div>
+      </div>
+      <div class="card"><h3>প্যাকেজ</h3>
+        ${owned.length ? owned.map(([pid, c]) => `<div class="listRow"><span>${esc(packages[pid]?.name || pid)} × ${num(c)}</span>
+          <button class="btn bad sm" onclick="removePackage('${esc(phone)}','${esc(pid)}')">নিয়ে নিন</button></div>`).join('')
+          : `<p class="muted">কোনো প্যাকেজ নেই</p>`}
+        <div class="line">
+          <div><label>প্যাকেজ দিন</label><select id="pkgSel">${pkgOptions || '<option value="">কোনো প্যাকেজ নেই</option>'}</select></div>
+          <button class="btn ok" onclick="grantPackage('${esc(phone)}')">দিন</button>
+        </div>
+      </div>
+    </div>
+    <div class="card"><h3>পেমেন্ট অ্যাকাউন্ট</h3>
+      <div class="grid3">
+        <div><label>মাধ্যম</label><select id="accMethod">
+          ${['bkash','nagad','rocket'].map(m => `<option value="${m}" ${acc.method === m ? 'selected' : ''}>${m}</option>`).join('')}
+        </select></div>
+        <div><label>নাম</label><input id="accName" value="${esc(acc.name || '')}"></div>
+        <div><label>নম্বর</label><input id="accNumber" value="${esc(acc.number || '')}"></div>
+      </div>
+      <div class="actions"><button class="btn" onclick="saveAccount('${esc(phone)}')">সেভ করুন</button></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>অ্যাকাউন্ট নিয়ন্ত্রণ</h3>
+        <div class="actions" style="margin-top:0">
+          ${u.isBanned
+            ? `<button class="btn ok" onclick="toggleBan('${esc(phone)}', false)">আনব্যান করুন</button>`
+            : `<button class="btn bad" onclick="toggleBan('${esc(phone)}', true)">ব্যান করুন</button>`}
+        </div>
+      </div>
+      <div class="card"><h3>সাম্প্রতিক অ্যাডমিন কার্যক্রম</h3>
+        ${logs.length ? logs.map(l => `<div class="listRow"><span>${l.type === 'credit' ? 'টাকা যোগ' : 'টাকা বিয়োগ'} · ${money(l.amount)}</span><span class="muted">${fmt(l.createdAt)}</span></div>`).join('') : `<p class="muted">কোনো কার্যক্রম নেই</p>`}
+      </div>
+    </div>`;
+}
+function readAmount() {
+  const v = Math.floor(num($('amtIn').value));
+  if (v <= 0) { notice('সঠিক পরিমাণ লিখুন'); return 0; }
+  return v;
+}
+async function logAdmin(phone, type, amount) {
+  const k = push(ref(db, `users/${phone}/adminLog`)).key;
+  await update(ref(db), { [`users/${phone}/adminLog/${k}`]: { type, amount, createdAt: Date.now() } });
+}
+window.creditUser = async phone => {
+  const amt = readAmount(); if (!amt) return;
+  await runTransaction(ref(db, `users/${phone}/balance`), cur => num(cur) + amt);
+  await logAdmin(phone, 'credit', amt);
+  notice('টাকা যোগ হয়েছে');
+};
+window.debitUser = async phone => {
+  const amt = readAmount(); if (!amt) return;
+  const r = await runTransaction(ref(db, `users/${phone}/balance`), cur => num(cur) >= amt ? num(cur) - amt : undefined);
+  if (!r.committed) return notice('ইউজারের ব্যালেন্স পর্যাপ্ত নয়');
+  await logAdmin(phone, 'debit', amt);
+  notice('টাকা নেওয়া হয়েছে');
+};
+window.grantPackage = async phone => {
+  const pid = $('pkgSel').value;
+  if (!pid) return notice('প্রথমে প্যাকেজ তৈরি করুন');
+  await runTransaction(ref(db, `users/${phone}/purchasedCounts/${pid}`), cur => num(cur) + 1);
+  notice('প্যাকেজ দেওয়া হয়েছে');
+};
+window.removePackage = async (phone, pid) => {
+  if (!confirm('এই প্যাকেজটি ইউজারের কাছ থেকে নিয়ে নেওয়া হবে?')) return;
+  await update(ref(db), { [`users/${phone}/purchasedCounts/${pid}`]: 0 });
+  notice('প্যাকেজ নিয়ে নেওয়া হয়েছে');
+};
+window.toggleBan = async (phone, ban) => { await update(ref(db), { [`users/${phone}/isBanned`]: ban }); };
+window.saveAccount = async phone => {
+  const acc = { method: $('accMethod').value, name: $('accName').value.trim(), number: $('accNumber').value.trim() };
+  if (!/^01[3-9]\d{8}$/.test(acc.number)) return notice('সঠিক ১১ ডিজিটের নম্বর দিন');
+  await update(ref(db), { [`users/${phone}/withdrawAccount`]: acc });
+  notice('অ্যাকাউন্ট সেভ হয়েছে');
+};
+
+/* ---------- ফিল্টার ---------- */
+function filterBar(current, setter) {
+  const items = [['pending','পেন্ডিং'], ['reject','রিজেক্ট'], ['success','সাকসেসফুল']];
+  return `<div class="seg">${items.map(([k, l]) => `<button class="${current === k ? 'on' : ''}" onclick="${setter}('${k}')">${l}</button>`).join('')}</div>`;
+}
+window.setDepFilter = k => { depFilter = k; renderDeposits(); };
+window.setWdFilter = k => { wdFilter = k; renderWithdrawals(); };
+
+/* ---------- ডিপোজিট ---------- */
+function renderDeposits() {
+  const map = { pending: DEP.PENDING, reject: DEP.BAD, success: DEP.OK };
+  const list = Object.entries(deposits)
+    .filter(([, d]) => d.status === map[depFilter])
+    .sort((a, b) => num(b[1].createdAt) - num(a[1].createdAt));
+  $('content').innerHTML = `
+    <div class="card"><h3>ম্যানুয়াল ডিপোজিট (সরাসরি অনুমোদিত)</h3>
+      <div class="line">
+        <div><label>ইউজারের ফোন</label><input id="mPhone" placeholder="01XXXXXXXXX"></div>
+        <div><label>পরিমাণ (৳)</label><input id="mAmt" type="number" min="1" placeholder="যেমন 500"></div>
+        <button class="btn ok" onclick="manualDeposit()">যোগ করুন</button>
+      </div></div>
+    ${filterBar(depFilter, 'setDepFilter')}
+    ${list.length ? list.map(([id, d]) => `
+      <div class="item"><div>
+        <b>${esc(d.userName || '')}</b> <span class="muted">${esc(d.userPhone)}</span><br>
+        <span class="muted">${esc(d.method)} · ${fmt(d.createdAt)} · TRX: ${esc(d.trxId || '—')}</span></div>
+        <div style="text-align:right"><b style="font-size:18px;color:var(--ink2)">${money(d.amount)}</b><br>${badge(d.status)}
+        ${d.status === DEP.PENDING ? `<div class="actions" style="justify-content:flex-end">
+          <button class="btn ok sm" onclick="approveDeposit('${esc(id)}')">অনুমোদন</button>
+          <button class="btn bad sm" onclick="rejectDeposit('${esc(id)}')">রিজেক্ট</button></div>` : ''}</div>
+      </div>`).join('') : `<div class="empty">এই তালিকায় কিছু নেই</div>`}`;
+}
+window.manualDeposit = async () => {
+  const phone = $('mPhone').value.trim(), amount = Math.floor(num($('mAmt').value));
+  if (!users[phone]) return notice('এই নম্বরের ইউজার পাওয়া যায়নি');
+  if (amount <= 0) return notice('সঠিক পরিমাণ লিখুন');
+  const key = push(ref(db, 'deposits')).key;
+  const rec = { id: key, userPhone: phone, userName: users[phone].name || '', amount, method: 'manual', status: DEP.PENDING, trxId: 'ADMIN', createdAt: Date.now() };
+  await update(ref(db), { [`deposits/${key}`]: rec, [`users/${phone}/deposits/${key}`]: rec });
+  await approveDepositById(key);
+};
+window.approveDeposit = id => approveDepositById(id);
+async function approveDepositById(id) {
+  const d = deposits[id];
+  if (!d || d.status !== DEP.PENDING) return;
+  const claim = await runTransaction(ref(db, `deposits/${id}/status`), cur => cur === DEP.PENDING ? DEP.OK : undefined);
+  if (!claim.committed) return notice('ইতোমধ্যে প্রসেস হয়েছে');
+  const amount = num(d.amount);
+  const user = users[d.userPhone] || {};
+  const bal = {}, updates = {};
+  bal[d.userPhone] = num(user.balance) + amount;
+  updates[`users/${d.userPhone}/balance`] = bal[d.userPhone];
+  updates[`users/${d.userPhone}/deposits/${id}/status`] = DEP.OK;
+  let code = user.invitedByCode; const seen = new Set([d.userPhone]);
+  for (let lvl = 0; lvl < 3 && code; lvl++) {
+    const parentPhone = Object.keys(users).find(p => users[p].referralCode === code);
+    if (!parentPhone || seen.has(parentPhone)) break;
+    seen.add(parentPhone);
+    const p = users[parentPhone];
+    const rate = num(cfg.rates[lvl]);
+    const comm = Math.round(amount * rate) / 100;
+    if (comm > 0) {
+      bal[parentPhone] = (bal[parentPhone] ?? num(p.balance)) + comm;
+      updates[`users/${parentPhone}/balance`] = bal[parentPhone];
+      const k = push(ref(db, `users/${parentPhone}/commissions`)).key;
+      updates[`users/${parentPhone}/commissions/${k}`] = { fromPhone: d.userPhone, depositId: id, level: lvl + 1, rate, amount: comm, createdAt: Date.now() };
+    }
+    code = p.invitedByCode;
+  }
+  await update(ref(db), updates);
+  notice('ডিপোজিট অনুমোদিত হয়েছে');
+}
+window.rejectDeposit = async id => {
+  const d = deposits[id];
+  if (!d || d.status !== DEP.PENDING) return;
+  const claim = await runTransaction(ref(db, `deposits/${id}/status`), cur => cur === DEP.PENDING ? DEP.BAD : undefined);
+  if (!claim.committed) return;
+  await update(ref(db), { [`users/${d.userPhone}/deposits/${id}/status`]: DEP.BAD });
+  notice('ডিপোজিট রিজেক্ট করা হয়েছে');
+};
+
+/* ---------- উত্তোলন ---------- */
+function renderWithdrawals() {
+  const map = { pending: WD.PENDING, reject: WD.BAD, success: WD.OK };
+  const list = Object.entries(withdrawals)
+    .filter(([, w]) => w.status === map[wdFilter])
+    .sort((a, b) => num(b[1].createdAt) - num(a[1].createdAt));
+  $('content').innerHTML = filterBar(wdFilter, 'setWdFilter') + (list.length ? list.map(([id, w]) => `
+    <div class="item"><div>
+        <b>${esc(w.userName || '')}</b> <span class="muted">${esc(w.userPhone)}</span><br>
+        <span class="muted">${esc(w.method)} · ${esc(w.accountNumber)} · ${fmt(w.createdAt)}</span><br>
+        <span class="muted">চার্জ: ${money(w.fee)} · পাবেন: ${money(w.netAmount)}</span></div>
+      <div style="text-align:right"><b style="font-size:18px;color:var(--ink2)">${money(w.amount)}</b><br>${badge(w.status)}
+        ${w.status === WD.PENDING ? `<div class="actions" style="justify-content:flex-end">
+        <button class="btn ok sm" onclick="approveWithdraw('${esc(id)}')">পেমেন্ট সম্পন্ন</button>
+        <button class="btn bad sm" onclick="rejectWithdraw('${esc(id)}')">রিজেক্ট (ফেরত)</button></div>` : ''}</div>
+    </div>`).join('') : `<div class="empty">এই তালিকায় কিছু নেই</div>`);
+}
+window.approveWithdraw = async id => {
+  const w = withdrawals[id];
+  if (!w || w.status !== WD.PENDING) return;
+  const claim = await runTransaction(ref(db, `withdrawal_requests/${id}/status`), cur => cur === WD.PENDING ? WD.OK : undefined);
+  if (!claim.committed) return;
+  await update(ref(db), { [`users/${w.userPhone}/withdrawals/${id}/status`]: WD.OK });
+  notice('উত্তোলন সফল হয়েছে');
+};
+window.rejectWithdraw = async id => {
+  const w = withdrawals[id];
+  if (!w || w.status !== WD.PENDING) return;
+  const claim = await runTransaction(ref(db, `withdrawal_requests/${id}/status`), cur => cur === WD.PENDING ? WD.BAD : undefined);
+  if (!claim.committed) return;
+  await runTransaction(ref(db, `users/${w.userPhone}/balance`), cur => num(cur) + num(w.amount));
+  await update(ref(db), { [`users/${w.userPhone}/withdrawals/${id}/status`]: WD.BAD });
+  notice('উত্তোলন রিজেক্ট হয়েছে, টাকা ফেরত দেওয়া হয়েছে');
+};
+
+/* ---------- ডিপোজিট অ্যামাউন্ট ---------- */
+function currentQuick() { return quickDraft ?? [...cfg.depQuick]; }
+function renderAmounts() {
+  const sel = currentQuick();
+  const all = [...new Set([...QUICK_SUGGEST, ...sel])].sort((a, b) => a - b);
+  $('content').innerHTML = `
+    <div class="card"><h3>দ্রুত বাছাইয়ের পরিমাণ</h3>
+      <p class="tabs-note">যে পরিমাণগুলো সিলেক্ট করবেন, ইউজারের রিচার্জ পেজে ঠিক সেগুলোই বাটন হয়ে দেখাবে।</p>
+      <div class="chipWrap">
+        ${all.map(a => `<span class="chip ${sel.includes(a) ? 'on' : ''}" onclick="toggleQuick(${a})">৳ ${a.toLocaleString('en-US')}</span>`).join('')}
+      </div>
+      <div class="line">
+        <div><label>নতুন পরিমাণ যোগ করুন (৳)</label><input id="qNew" type="number" min="1" step="1" placeholder="যেমন 3000"></div>
+        <button class="btn ghost" onclick="addQuick()">যোগ করুন</button>
+      </div>
+      <div class="actions"><button class="btn" onclick="saveQuick()">সেভ করুন</button>
+        <button class="btn ghost" onclick="resetQuick()">ডিফল্টে ফিরুন</button></div>
+    </div>
+    <div class="card"><h3>সর্বনিম্ন ডিপোজিট</h3>
+      <div class="line" style="margin-top:0">
+        <div><label>সর্বনিম্ন (৳)</label><input id="dMin" type="number" min="0" step="1" value="${cfg.depMin}"></div>
+        <button class="btn" onclick="saveDepMin()">সেভ করুন</button>
+      </div>
+    </div>`;
+}
+window.toggleQuick = a => {
+  const cur = currentQuick();
+  quickDraft = cur.includes(a) ? cur.filter(x => x !== a) : [...cur, a].sort((x, y) => x - y);
+  renderAmounts();
+};
+window.addQuick = () => {
+  const v = Math.floor(num($('qNew').value));
+  if (v <= 0) return notice('সঠিক পরিমাণ লিখুন');
+  const cur = currentQuick();
+  if (!cur.includes(v)) quickDraft = [...cur, v].sort((x, y) => x - y);
+  renderAmounts();
+};
+window.saveQuick = async () => {
+  const list = currentQuick().filter(x => x > 0);
+  if (!list.length) return notice('অন্তত একটি পরিমাণ সিলেক্ট করুন');
+  await update(ref(db, 'site_settings'), { deposit_quick_amounts: list });
+  quickDraft = null;
+  notice('দ্রুত বাছাইয়ের পরিমাণ সেভ হয়েছে');
+};
+window.resetQuick = async () => {
+  await update(ref(db, 'site_settings'), { deposit_quick_amounts: QUICK_SUGGEST });
+  quickDraft = null;
+  notice('ডিফল্ট পরিমাণে ফেরানো হয়েছে');
+};
+window.saveDepMin = async () => {
+  await update(ref(db, 'site_settings'), { deposit_min_amount: Math.max(0, Math.floor(num($('dMin').value))) });
+  notice('সর্বনিম্ন ডিপোজিট সেভ হয়েছে');
+};
+
+/* ---------- প্যাকেজ ---------- */
+function renderPackages() {
+  const f = editPkgId ? (packages[editPkgId] || {}) : {};
+  const img = pkgImage !== null ? pkgImage : (f.image || '');
+  const list = Object.entries(packages).sort((a, b) => num(a[1].cost) - num(b[1].cost));
+  const statusLabel = { active: 'সক্রিয়', soon: 'শীঘ্রই', hidden: 'লুকানো' };
+  $('content').innerHTML = `
+    <div class="card"><h3>${editPkgId ? 'প্যাকেজ এডিট' : 'নতুন প্যাকেজ'}</h3>
+      <div class="upl">
+        <div class="thumb">${img ? `<img src="${img}" alt="">` : '<span class="muted">ছবি নেই</span>'}</div>
+        <div><label>প্যাকেজের ছবি</label><input type="file" accept="image/*" id="pImg" onchange="pickImage(this)"></div>
+        ${img ? '<button class="btn ghost sm" onclick="clearImage()">ছবি সরান</button>' : ''}
+      </div>
+      <div class="grid3">
+        <div><label>নাম</label><input id="pName" value="${esc(f.name || '')}"></div>
+        <div><label>দাম (৳)</label><input id="pCost" type="number" min="1" value="${f.cost ?? ''}"></div>
+        <div><label>দৈনিক আয় (৳)</label><input id="pDaily" type="number" min="0" value="${f.daily ?? ''}"></div>
+        <div><label>মেয়াদ (দিন)</label><input id="pDur" type="number" min="1" value="${f.duration ?? ''}"></div>
+        <div><label>কেনার সীমা (বার)</label><input id="pLimit" type="number" min="1" value="${f.limit ?? 1}"></div>
+        <div><label>স্ট্যাটাস</label><select id="pStatus">
+          <option value="active" ${!f.status || f.status === 'active' ? 'selected' : ''}>সক্রিয়</option>
+          <option value="soon" ${f.status === 'soon' ? 'selected' : ''}>শীঘ্রই</option>
+          <option value="hidden" ${f.status === 'hidden' ? 'selected' : ''}>লুকানো</option>
+        </select></div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="savePackage()">সেভ করুন</button>
+        ${editPkgId ? '<button class="btn ghost sm" onclick="cancelEditPkg()">বাতিল</button>' : ''}
+      </div>
+    </div>
+    ${list.length ? list.map(([id, p]) => `
+      <div class="item"><div class="row" style="justify-content:flex-start;gap:16px">
+        <div class="thumb">${p.image ? `<img src="${p.image}" alt="">` : '<span class="muted">—</span>'}</div>
+        <div><b style="font-size:15px">${esc(p.name)}</b> <span class="badge">${esc(statusLabel[p.status] || 'সক্রিয়')}</span><br>
+          <span class="muted">বিনিয়োগ ${money(p.cost)} · দৈনিক ${money(p.daily)} · ${num(p.duration)} দিন · সীমা ${num(p.limit)} বার</span></div></div>
+        <div class="actions" style="margin:0">
+          <button class="btn ghost sm" onclick="editPackage('${esc(id)}')">এডিট</button>
+          <button class="btn bad sm" onclick="deletePackage('${esc(id)}')">মুছুন</button>
+        </div>
+      </div>`).join('') : `<div class="empty">এখনও কোনো প্যাকেজ নেই। উপরের ফর্ম দিয়ে প্যাকেজ যোগ করুন।</div>`}`;
+}
+window.pickImage = input => {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) return notice('শুধু ছবি ফাইল দিন');
+  const reader = new FileReader();
+  reader.onload = () => {
+    const im = new Image();
+    im.onload = () => {
+      const max = 480, scale = Math.min(1, max / Math.max(im.width, im.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(im.width * scale); c.height = Math.round(im.height * scale);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      pkgImage = c.toDataURL('image/jpeg', 0.84);
+      renderPackages();
+    };
+    im.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+};
+window.clearImage = () => { pkgImage = ''; renderPackages(); };
+window.savePackage = async () => {
+  const name = $('pName').value.trim();
+  const cost = Math.floor(num($('pCost').value));
+  const daily = Math.floor(num($('pDaily').value));
+  const duration = Math.floor(num($('pDur').value));
+  const limit = Math.max(1, Math.floor(num($('pLimit').value)));
+  const status = $('pStatus').value;
+  if (!name) return notice('প্যাকেজের নাম লিখুন');
+  if (cost <= 0) return notice('সঠিক দাম লিখুন');
+  if (duration <= 0) return notice('মেয়াদ কমপক্ষে ১ দিন হতে হবে');
+  const id = editPkgId || 'pk' + Date.now().toString(36);
+  const image = pkgImage !== null ? pkgImage : ((packages[id] || {}).image || '');
+  const data = { id, name, cost, daily, duration, limit, status };
+  if (image) data.image = image;
+  await update(ref(db), { [`packages/${id}`]: data });
+  editPkgId = null; pkgImage = null;
+  notice('প্যাকেজ সেভ হয়েছে');
+};
+window.editPackage = id => { editPkgId = id; pkgImage = null; renderPackages(); window.scrollTo(0, 0); };
+window.cancelEditPkg = () => { editPkgId = null; pkgImage = null; renderPackages(); };
+window.deletePackage = async id => {
+  if (!confirm('এই প্যাকেজটি মুছে ফেলা হবে?')) return;
+  await update(ref(db), { [`packages/${id}`]: null });
+  notice('প্যাকেজ মুছে ফেলা হয়েছে');
+};
+
+/* ---------- গিফট কোড ---------- */
+function randomCode() {
+  const L = 'ABCDEFGHJKLMNPQRSTUVWXYZ', D = '23456789';
+  let c = ''; for (let i = 0; i < 4; i++) c += L[Math.floor(Math.random()*L.length)];
+  for (let i = 0; i < 4; i++) c += D[Math.floor(Math.random()*D.length)];
+  return c;
+}
+function renderGifts() {
+  const f = editGiftCode ? (gifts[editGiftCode] || {}) : {};
+  const list = Object.entries(gifts).sort((a, b) => num(b[1].createdAt) - num(a[1].createdAt));
+  $('content').innerHTML = `
+    <div class="card"><h3>${editGiftCode ? 'গিফট কোড এডিট' : 'নতুন গিফট কোড'}</h3>
+      <div class="grid3">
+        <div><label>কোড</label>
+          <div style="display:flex;gap:8px"><input id="gCode" value="${esc(editGiftCode || '')}" ${editGiftCode ? 'readonly' : ''} style="text-transform:uppercase">
+          ${editGiftCode ? '' : '<button class="btn ghost sm" onclick="genGiftCode()">তৈরি</button>'}</div></div>
+        <div><label>সর্বনিম্ন বোনাস (৳)</label><input id="gMin" type="number" min="0" value="${f.min_amount ?? f.amount ?? ''}"></div>
+        <div><label>সর্বোচ্চ বোনাস (৳)</label><input id="gMax" type="number" min="0" value="${f.max_amount ?? f.amount ?? ''}"></div>
+        <div><label>মোট ব্যবহার সীমা (০ = সীমাহীন)</label><input id="gLimit" type="number" min="0" value="${f.max_claims ?? 0}"></div>
+        <div><label>স্ট্যাটাস</label><select id="gStatus">
+          <option value="active" ${f.status !== 'inactive' ? 'selected' : ''}>সক্রিয়</option>
+          <option value="inactive" ${f.status === 'inactive' ? 'selected' : ''}>নিষ্ক্রিয়</option>
+        </select></div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="saveGift()">সেভ করুন</button>
+        ${editGiftCode ? '<button class="btn ghost sm" onclick="cancelEditGift()">বাতিল</button>' : ''}
+      </div>
+    </div>
+    ${list.length ? list.map(([code, g]) => `
+      <div class="item"><div>
+          <b style="font-size:16px;letter-spacing:1.5px">${esc(code)}</b> ${g.status === 'inactive' ? '<span class="badge b-bad">নিষ্ক্রিয়</span>' : '<span class="badge b-ok">সক্রিয়</span>'}<br>
+          <span class="muted">বোনাস ${money(g.min_amount ?? g.amount)} – ${money(g.max_amount ?? g.amount)} · ব্যবহৃত ${num(g.claimed_count)} / ${num(g.max_claims) || '∞'}</span></div>
+        <div class="actions" style="margin:0">
+          <button class="btn ghost sm" onclick="editGift('${esc(code)}')">এডিট</button>
+          <button class="btn bad sm" onclick="deleteGift('${esc(code)}')">মুছুন</button>
+        </div>
+      </div>`).join('') : `<div class="empty">এখনও কোনো গিফট কোড নেই।</div>`}`;
+}
+window.genGiftCode = () => { $('gCode').value = randomCode(); };
+window.saveGift = async () => {
+  const code = $('gCode').value.trim().toUpperCase();
+  const min = Math.floor(num($('gMin').value));
+  const max = Math.max(min, Math.floor(num($('gMax').value)));
+  const limit = Math.max(0, Math.floor(num($('gLimit').value)));
+  const status = $('gStatus').value;
+  if (!/^[A-Z0-9]{4,20}$/.test(code)) return notice('কোড ৪–২০ অক্ষর (ইংরেজি বড় হাতের অক্ষর ও সংখ্যা) হতে হবে');
+  if (min <= 0) return notice('সঠিক বোনাস অঙ্ক লিখুন');
+  if (!editGiftCode && gifts[code]) return notice('এই কোডটি আগে থেকেই আছে');
+  const data = { min_amount: min, max_amount: max, amount: min, max_claims: limit, status };
+  if (!editGiftCode) { data.claimed_count = 0; data.createdAt = Date.now(); }
+  await update(ref(db), Object.fromEntries(Object.entries(data).map(([k, v]) => [`bonus_codes/${code}/${k}`, v])));
+  editGiftCode = null;
+  notice('গিফট কোড সেভ হয়েছে');
+};
+window.editGift = code => { editGiftCode = code; renderGifts(); window.scrollTo(0, 0); };
+window.cancelEditGift = () => { editGiftCode = null; renderGifts(); };
+window.deleteGift = async code => {
+  if (!confirm('এই গিফট কোডটি মুছে ফেলা হবে?')) return;
+  await update(ref(db), { [`bonus_codes/${code}`]: null });
+  notice('গিফট কোড মুছে ফেলা হয়েছে');
+};
+
+/* ---------- সাইটের লেখা ---------- */
+function renderTexts() {
+  const q = textSearch.trim().toLowerCase();
+  const match = t => !q || t.toLowerCase().includes(q);
+  const rows = TEXT_ITEMS.filter(it => match(it.sel + ' ' + it.bn + ' ' + it.en));
+  const idRows = ID_ITEMS.filter(it => match(it.id + ' ' + it.text));
+  $('content').innerHTML = `
+    <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="tSearch" placeholder="লেখা বা আইডি দিয়ে খুঁজুন" value="${esc(textSearch)}"></div>
+
+    <div class="card"><h3>নোটিশ পপআপ (হোম স্ক্রিন ও টেলিগ্রাম জয়েন)</h3>
+      <p class="tabs-note">রেজিস্ট্রেশনের পর যে হোম পপআপ আসে, তার শিরোনাম, লেখা ও টেলিগ্রাম লিংক।</p>
+      <div class="tx-row">
+        <div><label>শিরোনাম</label><input id="nTitle" value="${esc(notice_.title)}" placeholder="নোটিশ"></div>
+        <div><label>টেলিগ্রাম চ্যানেল লিংক</label><input id="nTg" value="${esc(notice_.tg)}" placeholder="https://t.me/..."></div>
+      </div>
+      <label>লেখা</label><textarea id="nText" rows="3">${esc(notice_.text)}</textarea>
+      <div class="actions"><button class="btn" onclick="saveNotice()">সেভ করুন</button></div>
+    </div>
+
+    <div class="card"><h3>রিচার্জ, উত্তোলন, প্ল্যান ও অন্যান্য লেখা (বাংলা ও ইংরেজি)</h3>
+      <p class="tabs-note">বাংলা ও ইংরেজি দুটো আলাদা বক্সে বদলানো যায়। খালি রাখলে আসল লেখা থাকবে।</p>
+      ${rows.length ? rows.map(it => {
+        const bnVal = textBn[splKey(it.sel)] ?? it.bn;
+        const enVal = textEn[splKey(it.sel)] ?? it.en;
+        const changed = (textBn[splKey(it.sel)] !== undefined) || (textEn[splKey(it.sel)] !== undefined);
+        return `<div class="item" style="display:block;padding:16px 18px">
+          <div class="row" style="margin-bottom:10px"><span class="badge">${esc(it.sel)}</span>
+            ${changed ? '<span class="badge b-ok">বদলানো হয়েছে</span>' : ''}</div>
+          <div class="tx-row">
+            <div><label>বাংলা</label><textarea id="bn_${splKey(it.sel)}" rows="2" style="resize:vertical">${esc(bnVal)}</textarea></div>
+            <div><label>English</label><textarea id="en_${splKey(it.sel)}" rows="2" style="resize:vertical">${esc(enVal)}</textarea></div>
+          </div>
+          <div class="actions"><button class="btn sm" onclick="saveTxPair('${esc(it.sel)}')">সেভ</button>
+            <button class="btn ghost sm" onclick="resetTxPair('${esc(it.sel)}')">ডিফল্ট</button></div>
+        </div>`;
+      }).join('') : `<div class="empty">কোনো লেখা পাওয়া যায়নি</div>`}
+    </div>
+
+    <div class="card"><h3>অন্যান্য লেখা (শুধু বাংলা)</h3>
+      ${idRows.length ? idRows.map(it => {
+        const cur = editable[it.id];
+        const val = typeof cur === 'string' ? cur : it.text;
+        return `<div class="item" style="display:block;padding:14px 16px">
+          <div class="row" style="margin-bottom:8px"><span class="badge">${esc(it.id)}</span>
+            <span class="muted">${typeof cur === 'string' ? '✎ বদলানো হয়েছে' : 'আসল লেখা'}</span></div>
+          <textarea id="t_${esc(it.id)}" rows="2" style="resize:vertical">${esc(val)}</textarea>
+          <div class="actions"><button class="btn sm" onclick="saveText('${esc(it.id)}')">সেভ</button>
+            <button class="btn ghost sm" onclick="resetText('${esc(it.id)}')">ডিফল্ট</button></div>
+        </div>`;
+      }).join('') : `<div class="empty">কোনো লেখা পাওয়া যায়নি</div>`}
+    </div>`;
+  const inp = $('tSearch');
+  if (inp) inp.oninput = e => { textSearch = e.target.value; renderTexts(); $('tSearch').focus(); };
+}
+window.saveTxPair = async sel => {
+  const k = splKey(sel);
+  const bn = $('bn_' + k).value.trim(), en = $('en_' + k).value.trim();
+  const orig = TEXT_ITEMS.find(i => i.sel === sel) || {};
+  const patch = {};
+  patch[k] = (bn && bn !== orig.bn) ? bn : null;
+  const pBn = { [k]: (bn && bn !== orig.bn) ? bn : null };
+  const pEn = { [k]: (en && en !== orig.en) ? en : null };
+  await update(ref(db, 'site_settings/text_bn'), pBn);
+  await update(ref(db, 'site_settings/text_en'), pEn);
+  notice('লেখা সেভ হয়েছে');
+};
+window.resetTxPair = async sel => {
+  const k = splKey(sel);
+  await update(ref(db, 'site_settings/text_bn'), { [k]: null });
+  await update(ref(db, 'site_settings/text_en'), { [k]: null });
+  notice('আসল লেখায় ফেরানো হয়েছে');
+};
+window.saveNotice = async () => {
+  const tg = $('nTg').value.trim();
+  if (tg && !/^https?:\/\//.test(tg)) return notice('টেলিগ্রাম লিংক https:// দিয়ে শুরু হতে হবে');
+  await update(ref(db, 'site_settings'), {
+    notice_title: $('nTitle').value.trim(),
+    notice_text: $('nText').value.trim(),
+    telegram_channel_url: tg
+  });
+  notice('নোটিশ সেভ হয়েছে');
+};
+window.saveText = async id => {
+  const v = $('t_' + id).value.trim();
+  if (!v) return notice('খালি লেখা সেভ করা যাবে না, ডিফল্টে ফেরাতে "ডিফল্ট" চাপুন');
+  await update(ref(db, 'site_settings/editable_texts'), { [id]: v });
+  notice('লেখা সেভ হয়েছে');
+};
+window.resetText = async id => {
+  await update(ref(db, 'site_settings/editable_texts'), { [id]: null });
+  notice('আসল লেখায় ফেরানো হয়েছে');
+};
+
+/* ---------- সাইটের রং ---------- */
+function renderColors() {
+  $('content').innerHTML = `
+    <div class="card"><h3>ইউজার প্যানেলের রং</h3>
+      <div class="cgrid">
+        ${COLOR_ITEMS.map(([key, label, cssVar, def]) => `
+          <div class="cbox">
+            <div class="lbl"><b>${label}</b><small>${cssVar}</small></div>
+            <input type="color" class="swatch" id="c_${key}" value="${pageColors[key] || def}">
+          </div>`).join('')}
+      </div>
+      <div class="preview" id="colorPreview">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <span style="background:${pageColors.primaryRed || '#870315'};color:#fff;padding:12px 22px;border-radius:12px;font-weight:700">প্রধান বাটন</span>
+          <span style="background:${pageColors.gold2 || '#bea668'};color:#fff;padding:12px 22px;border-radius:12px;font-weight:700">সোনালি</span>
+          <span style="color:${pageColors.textDark || '#1c1c1c'};font-weight:700">মূল লেখা</span>
+          <span style="color:${pageColors.textMuted || '#6b6b6b'}">হালকা লেখা</span>
+        </div>
+      </div>
+      <div class="actions"><button class="btn" onclick="saveColors()">সেভ করুন</button>
+        <button class="btn ghost" onclick="resetColors()">ডিফল্ট রং</button></div>
+    </div>
+    <p class="muted">সাইটের নাম এখান থেকে বদলানো যায় না।</p>`;
+  COLOR_ITEMS.forEach(([key]) => {
+    const el = $('c_' + key);
+    if (el) el.oninput = () => {};
+  });
+}
+window.saveColors = async () => {
+  const out = {};
+  COLOR_ITEMS.forEach(([key]) => { out[key] = $('c_' + key).value; });
+  await update(ref(db, 'site_settings'), { page_colors: out });
+  notice('রং সেভ হয়েছে');
+};
+window.resetColors = async () => {
+  await update(ref(db, 'site_settings'), { page_colors: null });
+  notice('ডিফল্ট রং ফেরানো হয়েছে');
+};
+
+/* ---------- পেমেন্ট নম্বর ---------- */
+function renderGateways() {
+  const b = gateways.bkash || {}, n = gateways.nagad || {};
+  $('content').innerHTML = `
+    <div class="grid2">
+      <div class="card"><h3>বিকাশ</h3>
+        <label>এজেন্ট নম্বর (Send Money)</label><input id="gwBkash" value="${esc(b.number || '')}" placeholder="01XXXXXXXXX">
+        <div class="actions"><button class="btn" onclick="saveGateway('bkash')">সেভ করুন</button></div>
+      </div>
+      <div class="card"><h3>নগদ</h3>
+        <label>এজেন্ট নম্বর (Send Money)</label><input id="gwNagad" value="${esc(n.number || '')}" placeholder="01XXXXXXXXX">
+        <div class="actions"><button class="btn" onclick="saveGateway('nagad')">সেভ করুন</button></div>
+      </div>
+    </div>
+    <p class="muted">এই নম্বরগুলো ইউজারের ডিপোজিট পেজে দেখাবে। ইউজারকে এখানে অবশ্যই Send Money করতে হবে।</p>`;
+}
+window.saveGateway = async m => {
+  const v = ($(m === 'bkash' ? 'gwBkash' : 'gwNagad').value || '').trim();
+  if (!/^01[3-9]\d{8}$/.test(v)) return notice('সঠিক ১১ ডিজিটের নম্বর দিন');
+  await update(ref(db), { [`gateways/${m}/number`]: v });
+  notice('নম্বর সেভ হয়েছে');
+};
+
+/* ---------- সাপোর্ট লিংক ---------- */
+function renderSupport() {
+  $('content').innerHTML = `
+    <div class="card"><h3>লিংক</h3>
+      <div class="grid3">
+        <div><label>কাস্টমার সার্ভিস</label><input id="sSupport" value="${esc(support.support || '')}" placeholder="https://t.me/..."></div>
+        <div><label>টেলিগ্রাম চ্যানেল</label><input id="sChannel" value="${esc(support.channel || '')}" placeholder="https://t.me/..."></div>
+        <div><label>টেলিগ্রাম গ্রুপ</label><input id="sGroup" value="${esc(support.group || '')}" placeholder="https://t.me/..."></div>
+      </div>
+      <div class="actions"><button class="btn" onclick="saveSupport()">সেভ করুন</button></div>
+    </div>`;
+}
+window.saveSupport = async () => {
+  const v = { support: $('sSupport').value.trim(), channel: $('sChannel').value.trim(), group: $('sGroup').value.trim() };
+  for (const k of Object.keys(v)) if (v[k] && !/^https?:\/\//.test(v[k])) return notice('লিংক https:// দিয়ে শুরু হতে হবে');
+  await update(ref(db), { support_links: v });
+  notice('লিংক সেভ হয়েছে');
+};
+
+/* ---------- সাইট নিয়ম ---------- */
+function renderSettings() {
+  $('content').innerHTML = `
+    <div class="grid2">
+      <div class="card"><h3>রেফার কমিশন (ডিপোজিটের %)</h3>
+        <div class="grid3">
+          <div><label>১ম %</label><input id="r1" type="number" min="0" step="0.01" value="${cfg.rates[0]}"></div>
+          <div><label>২য় %</label><input id="r2" type="number" min="0" step="0.01" value="${cfg.rates[1]}"></div>
+          <div><label>৩য় %</label><input id="r3" type="number" min="0" step="0.01" value="${cfg.rates[2]}"></div>
+        </div>
+        <div class="actions"><button class="btn" onclick="saveRates()">সেভ করুন</button></div>
+      </div>
+      <div class="card"><h3>রেজিস্ট্রেশন বোনাস</h3>
+        <label>বোনাস (৳)</label><input id="regBonus" type="number" min="0" step="1" value="${cfg.regBonus}">
+        <div class="actions"><button class="btn" onclick="saveBonus()">সেভ করুন</button></div>
+      </div>
+    </div>
+    <div class="card"><h3>উত্তোলন</h3>
+      <div class="grid2">
+        <div><label>সর্বনিম্ন উত্তোলন (৳)</label><input id="wMin" type="number" min="0" step="1" value="${cfg.wdMin}"></div>
+        <div><label>উত্তোলন চার্জ (%)</label><input id="wFee" type="number" min="0" max="100" step="0.01" value="${cfg.wdFee}"></div>
+        <div><label>শুরুর সময়</label><input id="wStart" type="time" value="${esc(cfg.wdStart)}"></div>
+        <div><label>শেষ সময়</label><input id="wEnd" type="time" value="${esc(cfg.wdEnd)}"></div>
+      </div>
+      <p class="muted" style="margin:12px 0">উদাহরণ: সর্বনিম্ন ৳200, চার্জ ১০% হলে ব্যালেন্স থেকে ৳200 কাটবে, ইউজার পাবে ৳180।</p>
+      <div class="actions"><button class="btn" onclick="saveWithdraw()">সেভ করুন</button></div>
+    </div>
+    <div class="card"><h3>উত্তোলনে KYC (KYC for Withdrawal)</h3>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+        <input id="kycReq" type="checkbox" ${cfg.kycReq ? 'checked' : ''} style="width:20px;height:20px">
+        <span><b>উত্তোলনে KYC বাধ্যতামূলক</b> <span class="muted">(চালু = KYC অনুমোদন ছাড়া উত্তোলন বন্ধ)</span><br>
+        <b>KYC required for withdrawal</b> <span class="muted">(ON = withdrawal blocked until KYC is approved)</span></span>
+      </label>
+      <p class="muted" style="margin:10px 0">বন্ধ (OFF) থাকলে KYC ছাড়াই স্বাভাবিকভাবে উত্তোলন চলবে. / When OFF, withdrawals run normally without KYC.</p>
+      <div class="actions"><button class="btn" onclick="saveKycReq()">সেভ করুন / Save</button></div>
+    </div>`;
+}
+window.saveRates = async () => {
+  const arr = ['r1','r2','r3'].map(i => Math.max(0, num($(i).value)));
+  await update(ref(db, 'site_settings'), { referral_commission_rates: arr });
+  notice('সেভ হয়েছে');
+};
+window.saveBonus = async () => {
+  await update(ref(db, 'site_settings'), { registration_bonus: Math.max(0, Math.floor(num($('regBonus').value))) });
+  notice('সেভ হয়েছে');
+};
+window.saveWithdraw = async () => {
+  const w = Math.max(0, Math.floor(num($('wMin').value)));
+  const fee = Math.min(100, Math.max(0, num($('wFee').value)));
+  await update(ref(db, 'site_settings'), {
+    withdrawal_min_amount: w,
+    minimum_withdrawal: w,
+    withdrawal_fee_percent: fee,
+    withdrawal_start_time: $('wStart').value || '10:00',
+    withdrawal_end_time: $('wEnd').value || '17:00'
+  });
+  notice('সেভ হয়েছে');
+};
+
+
+/* ---------- KYC যাচাই ---------- */
+let kycFilter = 'pending';
+function renderKyc() {
+  const rows = Object.entries(users)
+    .filter(([, u]) => u && u.kyc && u.kyc.nid)
+    .filter(([, u]) => (u.kyc.status || 'pending') === kycFilter)
+    .sort((x, y) => num(y[1].kyc.submittedAt) - num(x[1].kyc.submittedAt));
+  const tabs = [['pending', 'অপেক্ষমাণ · Pending'], ['approved', 'অনুমোদিত · Approved'], ['rejected', 'প্রত্যাখ্যাত · Rejected']]
+    .map(([k, l]) => `<button class="btn ${kycFilter === k ? 'ok' : ''} sm" onclick="setKycFilter('${k}')">${l}</button>`).join(' ');
+  const img = src => src
+    ? `<a href="${src}" target="_blank"><img src="${src}" style="width:100%;max-height:240px;object-fit:contain;border-radius:12px;border:1px solid #e0cd97;background:#fff"></a>`
+    : '<span class="muted">ছবি নেই</span>';
+  $('content').innerHTML = `<div class="actions" style="margin-bottom:12px">${tabs}</div>` +
+    (rows.length ? rows.map(([phone, u]) => {
+      const k = u.kyc;
+      return `<div class="item" style="flex-direction:column;align-items:stretch">
+        <div><b>${esc(k.name || '')}</b> <span class="muted">${esc(phone)}</span> · NID: <b>${esc(k.nid || '')}</b> · <span class="muted">${fmt(k.submittedAt)}</span></div>
+        <div class="grid2" style="margin-top:10px">${img(k.front)}${img(k.back)}</div>
+        ${kycFilter === 'pending' ? `<div class="actions" style="justify-content:flex-end;margin-top:10px">
+          <button class="btn ok sm" onclick="kycSet('${esc(phone)}','approved')">অনুমোদন (Approve)</button>
+          <button class="btn bad sm" onclick="kycSet('${esc(phone)}','rejected')">রিজেক্ট (Reject)</button></div>` : ''}
+      </div>`;
+    }).join('') : '<div class="empty">এই তালিকায় কিছু নেই</div>');
+}
+window.setKycFilter = k => { kycFilter = k; renderKyc(); };
+window.kycSet = async (phone, status) => {
+  await update(ref(db, 'users/' + phone + '/kyc'), { status, reviewedAt: Date.now() });
+  notice(status === 'approved' ? 'KYC অনুমোদিত হয়েছে' : 'KYC প্রত্যাখ্যাত হয়েছে');
+};
+window.saveKycReq = async () => {
+  await update(ref(db, 'site_settings'), { kyc_required_for_withdrawal: $('kycReq').checked });
+  notice('সেভ হয়েছে');
+};
+
+/* ---------- এরর সুরক্ষা ---------- */
+['creditUser','debitUser','grantPackage','removePackage','toggleBan','saveAccount','manualDeposit','approveDeposit','rejectDeposit','approveWithdraw','rejectWithdraw','saveQuick','resetQuick','saveDepMin','addQuick','savePackage','deletePackage','saveGift','deleteGift','saveTxPair','resetTxPair','saveNotice','saveText','resetText','saveColors','resetColors','saveGateway','saveSupport','saveRates','saveBonus','saveWithdraw'].forEach(n => {
+  const f = window[n];
+  if (typeof f !== 'function') return;
+  window[n] = (...a) => Promise.resolve().then(() => f(...a)).catch(e => notice(friendlyErr(e)));
+});
+</script>
+</body>
+</html>
